@@ -8,24 +8,20 @@
 #include "rosserial.h"
 #include "std_msgs/Float32MultiArray.h"
 
-
+// ros variables
 ros::NodeHandle nh;
-
-// parameters
-geometry::Vector* ex_pointer;
-geometry::Vector* ev_pointer;
-Dynamics* state_pointer;
-geometry::Vector eR;
-float* yaw_pointer;
-
 std_msgs::Float32MultiArray pub_msg;
-Quaternion q_camera2AUV;
 
+// parameters to "main.cpp"
+geometry::Vector ex;     // position error
+geometry::Vector ev = {0 , 0, 0};     // velocity error
+geometry::Vector eR;     // angle    error  
+geometry::Vector eOmega = {0 , 0, 0}; // angular velocity error 
 
-int arm_state = 0;
-int arm_l = 0;
+// other variables to "main.cpp"
+int Servo_State = 0;
+int CurrentMotor_State = 0;
 float desired_depth = 0;
-
 
 /* ----subscriber parameters
 - 0-2:   error angle x,y,z
@@ -34,79 +30,65 @@ float desired_depth = 0;
 - 6:     robot arm state
 
 */
+
+
+// callback for "rpi_to_stm32"
 void callback(const std_msgs::Float32MultiArray& msg){
-  /*state_pointer->orientation.w = msg.data[0];
-  state_pointer->orientation.x = msg.data[1];
-  state_pointer->orientation.y = msg.data[2];
-  state_pointer->orientation.z = msg.data[3];*/
-  //state.orientation.w = msg.data[0];
-
-
- 
   
 
-  
-  /*Quaternion camera(msg.data[0], msg.data[1], msg.data[2], msg.data[3]);
-  q_camera2AUV.x = 1;
-  q_camera2AUV.y = 0;
-  q_camera2AUV.z = 0;
-  q_camera2AUV.w = 0;
-  state_pointer->orientation = q_camera2AUV.conjugate() * camera * q_camera2AUV; */
-  
-  //state_pointer->orientation = camera;
-  /*state_pointer->velocity.angular.x = msg.data[4];
-  state_pointer->velocity.angular.y = msg.data[5];
-  state_pointer->velocity.angular.z = msg.data[6];*/ 
+  // error data for angle: row, yaw, pitch ; position: x, y 
   eR.x = msg.data[0];
   eR.y = msg.data[1];
   eR.z = msg.data[2];
-  ex_pointer->x = msg.data[3];
-  ex_pointer->y = msg.data[4];
-  desired_depth = msg.data[5];
-  arm_state = msg.data[6];
-  arm_l = msg.data[7];
+
+  ex.x = msg.data[3];
+  ex.y = msg.data[4];
   
-  /*ev_pointer->x = msg.data[10];
-  ev_pointer->y = msg.data[11];
-  ev_pointer->z = msg.data[12];
-  operate = msg.data[13]; //0 -> interrupt*/
+  // desired depth underwater
+  desired_depth = msg.data[5];
+
+  // operation info for the arm motors controlling 
+  Servo_State = msg.data[6];
+  CurrentMotor_State = msg.data[7];
   
 }
 
+// declaration
 ros::Publisher pub("stm32_to_rpi", &pub_msg);
 ros::Subscriber<std_msgs::Float32MultiArray> sub("rpi_to_stm32", callback);
 
 
+
+// subscribe topic: "rpi_to_stm32" 
 void rosserial_subscribe(){
     nh.spinOnce();
 }
 
-void rosserial_publish(float q_w, float q_x, float q_y, float q_z){
+
+// publish topic: "stm32_to_rpi"
+void rosserial_publish(float data0, float data1, float data2, float data3){
+  
   // publish data
+  // check quaternion
   pub_msg.data_length = 4;
-  float array[4] = {0};
+  float array[4] = {};
   
-  
-  array[0] = q_w;
-  array[1] = q_x;
-  array[2] = q_y;
-  array[3] = q_z;
+  array[0] = data0;
+  array[1] = data1;
+  array[2] = data2;
+  array[3] = data3;
   
   pub_msg.data = array;
   pub.publish(&pub_msg);
   nh.spinOnce();
 }
 
-void rosserial_init(geometry::Vector* ex_p, Dynamics* s_p, float* yaw)
+void rosserial_init()
 {
-  ex_pointer = ex_p;
-  state_pointer = s_p;
-  //yaw_pointer= yaw_p;
+  
   nh.initNode();
   nh.subscribe(sub);
   nh.advertise(pub);
-  //int pid = fork();
-  //if(pid==0){ nh.spinOnce(); HAL_Delay(1); }
   
 }
 

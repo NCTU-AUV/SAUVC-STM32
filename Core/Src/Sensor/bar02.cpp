@@ -75,6 +75,12 @@ bool Bar02::set(I2C_HandleTypeDef* handler)
 
     setFluidDensity(997);
 
+
+    // *****************************************//
+    // **** Initialization with offset below ***//
+    // *****************************************//
+     
+
     // remove initial sensor value (not accurate)
     depth_offset = 0;
     float temp = 0;
@@ -84,16 +90,6 @@ bool Bar02::set(I2C_HandleTypeDef* handler)
     }
 
     depth_offset = depth();
-    
-    // intialize 
-    
-    /*for(int i = 0; i < 50; i++)
-    {
-        read_value();
-        depth_offset = depth();
-    }*/
-    //depth_offset = depth(); 
-    //depth_offset = tmp / 50.0;
 
     return true;
 }

@@ -19,7 +19,7 @@
 extern "C"
 {
 #endif
-    void rosserial_init(geometry::Vector*, Dynamics*, float*);
+    void rosserial_init();
     //void rosserial_update(Dynamics&);
     void rosserial_publish(float q_w, float q_x, float q_y, float q_z);
     void rosserial_subscribe();

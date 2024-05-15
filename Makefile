@@ -13,7 +13,7 @@
 ######################################
 # target
 ######################################
-TARGET = SAUVC2022
+TARGET = SAUVC2024
 
 
 ######################################
@@ -83,7 +83,7 @@ Core/Src/bar02.cpp \
 Core/Src/rosserial.cpp \
 Core/Src/time.cpp \
 Core/Src/duration.cpp \
-Core/Src/interrupt.cpp
+Core/Src/KillSwitch.cpp
 
 # ASM sources
 ASM_SOURCES =  \

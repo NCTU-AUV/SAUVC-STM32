@@ -25,7 +25,6 @@
 #include "usart.h"
 #include "gpio.h"
 #include "rosserial.h"
-#include "KillSwitch.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -68,10 +67,6 @@ geometry::Vector Kv = {0, 0, 0};
 geometry::Vector KR = {0.004, 0.0028, 0.014};
 geometry::Vector KOmega = {0, 0, 0};
 
-// Control inputs for propulsion system
-// force: x, y, z; moment: x, y, z
-Kinematics control_input = {};  
-
 // other variables
 int done = 0;
 
@@ -111,8 +106,6 @@ int main(void)
     Bar02 depth_sensor;   // pressure senser
     if (!depth_sensor.set(&hi2c1))
         Interrupt_Handle();
-      
-    KillSwitch Switch;    // KillSwitch for the operation
     
     // Controller Initialization 
     Controller controller(Kx, Kv, KR, KOmega); 
@@ -135,17 +128,19 @@ int main(void)
       //Depth Sensor
       depth_sensor.read_value(); // calculate the pressure internally
       depth = depth_sensor.depth(); // calculate the depth via offset
-      ex.z = desired_depth - depth_sensor.depth(); // the error to the desired depth 
+      ex.z = desired_depth - depth; // the error to the desired depth
+      //ex.z = 0; // (Use when depth sensor stop working)
       
       //Controller
       // input ex, ev, eR, eOmega; output control_input
-      controller.update(ex, ev, eR, eOmega, control_input);
+      // Control inputs for propulsion system
+      // force: x, y, z; moment: x, y, z
+      Kinematics control_input = controller.update(ex, ev, eR, eOmega);
       
       // KillSwitch read the "operate" value
       // operate 0 stop the motor
       //         1 run  the motor
-      Switch.read_state();
-      operate = Switch.get_state();
+      operate = HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_2);
 
       /**  Underwater Motors control  **/ 
       // Allocate and Output
@@ -160,7 +155,9 @@ int main(void)
       }*/
 
       /**  CurrentMotor contrl  **/
+      //CurrentMotor_State = 1;
       //arm.CurrentMotor_SetMode(CurrentMotor_State);
+      arm.CurrentMotor_Test();
 
       // publisher topic: stm32_to_rpi 
       rosserial_publish(control_input.angular.x, control_input.angular.y, 0, depth);

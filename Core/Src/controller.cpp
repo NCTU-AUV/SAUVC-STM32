@@ -16,10 +16,10 @@ Controller::~Controller()
 {
 }
 
-void Controller::update(const geometry::Vector &ex, const geometry::Vector &ev, 
-                        const geometry::Vector &eR, const geometry::Vector &eOmega,
-                        Kinematics &control_input)
+Kinematics Controller::update(const geometry::Vector &ex, const geometry::Vector &ev, 
+                        const geometry::Vector &eR, const geometry::Vector &eOmega)
 {
+    Kinematics control_input;
 
     /******************************/
     /** calculate control inputs **/
@@ -64,4 +64,5 @@ void Controller::update(const geometry::Vector &ex, const geometry::Vector &ev,
     else if((eR.z < 5) || (eR.z > -5))        // yaw(degree): -5 ~ 5
         control_input.angular.z = KR.z * eR.z + KOmega.z * eOmega.z;
 
+    return control_input;
 }

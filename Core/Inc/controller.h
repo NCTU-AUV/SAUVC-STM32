@@ -17,12 +17,9 @@ private:
 public:
     Controller(geometry::Vector Kx, geometry::Vector Kv, geometry::Vector KR, geometry::Vector KOmega);
     ~Controller();
-    
-    void update(const geometry::Vector &ex, const geometry::Vector &ev, 
-                const geometry::Vector &eR, const geometry::Vector &eOmega, Kinematics &ctrl_input);
 
+    Kinematics update(const geometry::Vector &ex, const geometry::Vector &ev,
+                      const geometry::Vector &eR, const geometry::Vector &eOmega);
 };
-
-
 
 #endif

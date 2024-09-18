@@ -82,8 +82,7 @@ Core/Src/controller.cpp \
 Core/Src/bar02.cpp \
 Core/Src/rosserial.cpp \
 Core/Src/time.cpp \
-Core/Src/duration.cpp \
-Core/Src/KillSwitch.cpp
+Core/Src/duration.cpp
 
 # ASM sources
 ASM_SOURCES =  \

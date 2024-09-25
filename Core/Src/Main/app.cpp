@@ -1,4 +1,4 @@
-#include "app.h"
+#include "Main/app.h"
 
 #include "main.h"
 #include "dma.h"
@@ -9,14 +9,14 @@
 #include "gpio.h"
 
 #include <stdio.h>
-#include "rosserial.h"
+#include "Main/rosserial.h"
+#include "Main/robot_arm.h"
+#include "Main/dvl_reader.h"
+#include "Main/read_data.h"
+#include "Main/controller.h"
 #include "Propulsion_Sys/propulsion_sys.h"
 #include "Datatype/dynamics.h"
-#include "robot_arm.h"
 #include "Sensor/mpu9250.h"
-#include "dvl_reader.h"
-#include "read_data.h"
-#include "controller.h"
 #include "Sensor/bar02.h"
 
 void Interrupt_Handle();

@@ -9,7 +9,7 @@
 #define T200_H
 
 #include <cmath>
-#include "motor.h"
+#include "Main/motor.h"
 #include "t200_motor_graph.h"
 
 #define DIFF_MAX 90

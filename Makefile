@@ -68,22 +68,22 @@ Core/Src/system_stm32f4xx.c
 
 # CPP sources
 CPP_SOURCES = \
-Core/Src/app.cpp \
-Core/Src/motor.cpp \
+Core/Src/Main/app.cpp \
+Core/Src/Main/motor.cpp \
+Core/Src/Main/robot_arm.cpp \
+Core/Src/Main/dvl_reader.cpp \
+Core/Src/Main/read_data.cpp \
+Core/Src/Main/controller.cpp \
+Core/Src/Main/bar02.cpp \
+Core/Src/Main/rosserial.cpp \
+Core/Src/Main/time.cpp \
+Core/Src/Main/duration.cpp \
 Core/Src/Propulsion_Sys/t200.cpp \
 Core/Src/Propulsion_Sys/propulsion_sys.cpp \
-Core/Src/robot_arm.cpp \
 Core/Src/Datatype/quaternion.cpp \
 Core/Src/Sensor/spi_sensor.cpp \
 Core/Src/Sensor/Adafruit_AHRS_Madgwick.cpp \
-Core/Src/Sensor/mpu9250.cpp  \
-Core/Src/dvl_reader.cpp \
-Core/Src/read_data.cpp \
-Core/Src/controller.cpp \
-Core/Src/bar02.cpp \
-Core/Src/rosserial.cpp \
-Core/Src/time.cpp \
-Core/Src/duration.cpp
+Core/Src/Sensor/mpu9250.cpp
 
 # ASM sources
 ASM_SOURCES =  \

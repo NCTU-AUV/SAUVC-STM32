@@ -29,7 +29,7 @@
             "group": "build",
             "type": "shell",
             "command": "scp",
-            "args": ["build/SAUVC2022.bin", "pi@192.168.0.123:~/stm32_ws"]
+            "args": ["build/SAUVC2024.bin", "pi@192.168.0.123:~/stm32_ws"]
         }
     ]
 }

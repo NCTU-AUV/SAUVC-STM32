@@ -7,7 +7,7 @@
         {
             "name": "Cortex Debug",
             "cwd": "${workspaceFolder}",
-            "executable": "./build/SAUVC2022.elf",
+            "executable": "./build/SAUVC2024.elf",
             "request": "launch",
             "type": "cortex-debug",
             "runToEntryPoint": "main",

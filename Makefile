@@ -218,7 +218,7 @@ C_SOURCES += micro_ros_stm32cubemx_utils/extra_sources/microros_time.c
 C_SOURCES += micro_ros_stm32cubemx_utils/extra_sources/microros_transports/dma_transport.c
 
 print_cflags:
-  @echo $(CFLAGS)
+	@echo $(CFLAGS)
 
 #######################################
 # clean up

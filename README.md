@@ -1,6 +1,7 @@
 # Start Over Attempt
 
 This is my attempt to develop the control system from scratch, hoping to gain some knowledge about the details.
+This branch is intended to develop alongsied [SAUVC2024-RPI/use-ros2](https://github.com/NCTU-AUV/SAUVC2024-RPI/tree/use-ros2).
 
 ## Generate Code
 

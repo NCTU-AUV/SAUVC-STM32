@@ -3,6 +3,10 @@
 This is my attempt to develop the control system from scratch, hoping to gain some knowledge about the details.
 This branch is intended to develop alongsied [SAUVC2024-RPI/use-ros2](https://github.com/NCTU-AUV/SAUVC2024-RPI/tree/use-ros2).
 
+## Install Micro-ROS
+
+Follow: [Setting up micro-ROS on any STM32 microcontroller](https://github.com/lFatality/stm32_micro_ros_setup?tab=readme-ov-file#setting-up-micro-ros-on-any-stm32-microcontroller)
+
 ## Generate Code
 
 Use STM32CubeMX 6.12.0 to generate code. Note that STM32CubeMX 6.12.1 seems to have bugs that generates code causing an error when running `make`.

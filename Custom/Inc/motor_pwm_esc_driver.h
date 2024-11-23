@@ -41,5 +41,7 @@ void initialize_all_motors(
 );
 
 void set_motor_pwm_output(MotorNumber motor_number, uint32_t compare_value);
+void start_motor_pwm_output(MotorNumber motor_number);
+void stop_motor_pwm_output(MotorNumber motor_number);
 
 #endif

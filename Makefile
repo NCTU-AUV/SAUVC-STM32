@@ -170,6 +170,12 @@ LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BU
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
 #######################################
+# user custom code
+#######################################
+C_INCLUDES += -ICustom/Inc
+C_SOURCES += Custom/Src/micro_ros_configuration.c
+
+#######################################
 # micro-ROS addons
 #######################################
 LDFLAGS += micro_ros_stm32cubemx_utils/microros_static_library/libmicroros/libmicroros.a

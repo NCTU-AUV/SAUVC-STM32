@@ -15,28 +15,28 @@ typedef enum {
 } MotorNumber;
 
 void initialize_all_motors(
-    TIM_HandleTypeDef *motor_0_timer_htim,
+    TIM_HandleTypeDef *motor_0_htim,
     uint32_t motor_0_channel,
 
-    TIM_HandleTypeDef *motor_1_timer_htim,
+    TIM_HandleTypeDef *motor_1_htim,
     uint32_t motor_1_channel,
 
-    TIM_HandleTypeDef *motor_2_timer_htim,
+    TIM_HandleTypeDef *motor_2_htim,
     uint32_t motor_2_channel,
 
-    TIM_HandleTypeDef *motor_3_timer_htim,
+    TIM_HandleTypeDef *motor_3_htim,
     uint32_t motor_3_channel,
 
-    TIM_HandleTypeDef *motor_4_timer_htim,
+    TIM_HandleTypeDef *motor_4_htim,
     uint32_t motor_4_channel,
 
-    TIM_HandleTypeDef *motor_5_timer_htim,
+    TIM_HandleTypeDef *motor_5_htim,
     uint32_t motor_5_channel,
 
-    TIM_HandleTypeDef *motor_6_timer_htim,
+    TIM_HandleTypeDef *motor_6_htim,
     uint32_t motor_6_channel,
 
-    TIM_HandleTypeDef *motor_7_timer_htim,
+    TIM_HandleTypeDef *motor_7_htim,
     uint32_t motor_7_channel
 );
 

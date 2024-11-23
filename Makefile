@@ -173,7 +173,9 @@ all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET
 # user custom code
 #######################################
 C_INCLUDES += -ICustom/Inc
+
 C_SOURCES += Custom/Src/micro_ros_configuration.c
+C_SOURCES += Custom/Src/kill_switch_driver.c
 
 #######################################
 # micro-ROS addons

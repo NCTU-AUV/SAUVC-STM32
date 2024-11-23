@@ -17,7 +17,7 @@ void microros_deallocate(void * pointer, void * state);
 void * microros_reallocate(void * pointer, size_t size, void * state);
 void * microros_zero_allocate(size_t number_of_elements, size_t size_of_element, void * state);
 
-void configure_micro_ros(UART_HandleTypeDef* huart)
+static void configure_transport(UART_HandleTypeDef* huart)
 {
     rmw_uros_set_custom_transport(
     true,
@@ -26,7 +26,10 @@ void configure_micro_ros(UART_HandleTypeDef* huart)
     cubemx_transport_close,
     cubemx_transport_write,
     cubemx_transport_read);
+}
 
+static void configure_allocator()
+{
     rcl_allocator_t freeRTOS_allocator = rcutils_get_zero_initialized_allocator();
     freeRTOS_allocator.allocate = microros_allocate;
     freeRTOS_allocator.deallocate = microros_deallocate;
@@ -36,4 +39,10 @@ void configure_micro_ros(UART_HandleTypeDef* huart)
     if (!rcutils_set_default_allocator(&freeRTOS_allocator)) {
         printf("Error on default allocators (line %d)\n", __LINE__); 
     }
+}
+
+void configure_micro_ros(UART_HandleTypeDef* huart)
+{
+    configure_transport(huart);
+    configure_allocator();
 }

@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "micro_ros_configuration.h"
+#include "motor_pwm_esc_driver.h"
 
 #include <rcl/publisher.h>
 #include <rclc/types.h>
@@ -496,6 +497,17 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
+
+  initialize_all_motors(
+    &htim2, TIM_CHANNEL_1,
+    &htim2, TIM_CHANNEL_2,
+    &htim2, TIM_CHANNEL_3,
+    &htim2, TIM_CHANNEL_4,
+    &htim8, TIM_CHANNEL_1,
+    &htim8, TIM_CHANNEL_2,
+    &htim8, TIM_CHANNEL_3,
+    &htim8, TIM_CHANNEL_4
+  );
 
   configure_micro_ros(&huart3);
 

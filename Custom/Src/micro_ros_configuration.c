@@ -15,7 +15,7 @@ void microros_deallocate(void * pointer, void * state);
 void * microros_reallocate(void * pointer, size_t size, void * state);
 void * microros_zero_allocate(size_t number_of_elements, size_t size_of_element, void * state);
 
-static void configure_transport(UART_HandleTypeDef *const ros_transport_huart)
+static void configure_transport(UART_HandleTypeDef *ros_transport_huart)
 {
     rmw_uros_set_custom_transport(
     true,
@@ -39,7 +39,7 @@ static void configure_allocator()
     }
 }
 
-void configure_micro_ros(UART_HandleTypeDef *const ros_transport_huart)
+void configure_micro_ros(UART_HandleTypeDef *ros_transport_huart)
 {
     configure_transport(ros_transport_huart);
     configure_allocator();

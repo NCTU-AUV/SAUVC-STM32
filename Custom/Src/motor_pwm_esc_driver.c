@@ -5,6 +5,12 @@ struct {
     uint32_t motor_channel;
 } motor_profiles[8];
 
+void initialize_motor(MotorNumber motor_number, TIM_HandleTypeDef *motor_htim, uint32_t motor_channel)
+{
+    motor_profiles[motor_number].motor_htim = motor_htim;
+    motor_profiles[motor_number].motor_channel = motor_channel;
+}
+
 void initialize_all_motors(
     TIM_HandleTypeDef *motor_0_htim,
     uint32_t motor_0_channel,
@@ -31,29 +37,14 @@ void initialize_all_motors(
     uint32_t motor_7_channel
 )
 {
-    motor_profiles[MOTOR0].motor_htim = motor_0_htim;
-    motor_profiles[MOTOR0].motor_channel = motor_0_channel;
-
-    motor_profiles[MOTOR1].motor_htim = motor_1_htim;
-    motor_profiles[MOTOR1].motor_channel = motor_1_channel;
-
-    motor_profiles[MOTOR2].motor_htim = motor_2_htim;
-    motor_profiles[MOTOR2].motor_channel = motor_2_channel;
-
-    motor_profiles[MOTOR3].motor_htim = motor_3_htim;
-    motor_profiles[MOTOR3].motor_channel = motor_3_channel;
-
-    motor_profiles[MOTOR4].motor_htim = motor_4_htim;
-    motor_profiles[MOTOR4].motor_channel = motor_4_channel;
-
-    motor_profiles[MOTOR5].motor_htim = motor_5_htim;
-    motor_profiles[MOTOR5].motor_channel = motor_5_channel;
-
-    motor_profiles[MOTOR6].motor_htim = motor_6_htim;
-    motor_profiles[MOTOR6].motor_channel = motor_6_channel;
-
-    motor_profiles[MOTOR7].motor_htim = motor_7_htim;
-    motor_profiles[MOTOR7].motor_channel = motor_7_channel;
+    initialize_motor(MOTOR0, motor_0_htim, motor_0_channel);
+    initialize_motor(MOTOR1, motor_1_htim, motor_1_channel);
+    initialize_motor(MOTOR2, motor_2_htim, motor_2_channel);
+    initialize_motor(MOTOR3, motor_3_htim, motor_3_channel);
+    initialize_motor(MOTOR4, motor_4_htim, motor_4_channel);
+    initialize_motor(MOTOR5, motor_5_htim, motor_5_channel);
+    initialize_motor(MOTOR6, motor_6_htim, motor_6_channel);
+    initialize_motor(MOTOR7, motor_7_htim, motor_7_channel);
 }
 
 void set_motor_pwm_output(MotorNumber motor_number, uint32_t compare_value)

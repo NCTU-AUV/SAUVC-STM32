@@ -1,7 +1,5 @@
 #include "micro_ros_configuration.h"
 
-#include "stm32f4xx_hal.h"
-
 #include <stdbool.h>
 #include <stdio.h>
 

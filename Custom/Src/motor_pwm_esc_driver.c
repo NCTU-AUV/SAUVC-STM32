@@ -70,3 +70,27 @@ void stop_motor_pwm_output(MotorNumber motor_number)
 {
     HAL_TIM_PWM_Stop(motor_profiles[motor_number].motor_htim, motor_profiles[motor_number].motor_channel);
 }
+
+void start_all_motors_pwm_output()
+{
+    start_motor_pwm_output(MOTOR0);
+    start_motor_pwm_output(MOTOR1);
+    start_motor_pwm_output(MOTOR2);
+    start_motor_pwm_output(MOTOR3);
+    start_motor_pwm_output(MOTOR4);
+    start_motor_pwm_output(MOTOR5);
+    start_motor_pwm_output(MOTOR6);
+    start_motor_pwm_output(MOTOR7);
+}
+
+void stop_all_motors_pwm_output()
+{
+    stop_motor_pwm_output(MOTOR0);
+    stop_motor_pwm_output(MOTOR1);
+    stop_motor_pwm_output(MOTOR2);
+    stop_motor_pwm_output(MOTOR3);
+    stop_motor_pwm_output(MOTOR4);
+    stop_motor_pwm_output(MOTOR5);
+    stop_motor_pwm_output(MOTOR6);
+    stop_motor_pwm_output(MOTOR7);
+}

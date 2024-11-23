@@ -176,6 +176,7 @@ C_INCLUDES += -ICustom/Inc
 
 C_SOURCES += Custom/Src/micro_ros_configuration.c
 C_SOURCES += Custom/Src/kill_switch_driver.c
+C_SOURCES += Custom/Src/motor_pwm_esc_driver.c
 
 #######################################
 # micro-ROS addons

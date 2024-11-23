@@ -19,7 +19,7 @@ static void configure_transport(UART_HandleTypeDef *ros_transport_huart)
 {
     rmw_uros_set_custom_transport(
     true,
-    (void *) &ros_transport_huart,
+    (void *) ros_transport_huart,
     cubemx_transport_open,
     cubemx_transport_close,
     cubemx_transport_write,

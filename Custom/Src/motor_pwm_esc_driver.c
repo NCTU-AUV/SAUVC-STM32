@@ -55,3 +55,8 @@ void initialize_all_motors(
     motor_profiles[MOTOR7].motor_timer_htim = motor_7_timer_htim;
     motor_profiles[MOTOR7].motor_channel = motor_7_channel;
 }
+
+void set_motor_pwm_output(MotorNumber motor_number, uint32_t compare_value)
+{
+    __HAL_TIM_SetCompare(motor_profiles[motor_number].motor_timer_htim, motor_profiles[motor_number].motor_channel, compare_value);
+}

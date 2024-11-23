@@ -40,4 +40,6 @@ void initialize_all_motors(
     uint32_t motor_7_channel
 );
 
+void set_motor_pwm_output(MotorNumber motor_number, uint32_t compare_value);
+
 #endif

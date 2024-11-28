@@ -28,7 +28,7 @@
 #include <rcl/publisher.h>
 #include <rclc/types.h>
 
-#include <std_msgs/msg/detail/int32__struct.h>
+#include <std_msgs/msg/bool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -514,7 +514,7 @@ void StartDefaultTask(void *argument)
   // micro-ROS app
 
   rcl_publisher_t publisher;
-  std_msgs__msg__Int32 msg;
+  std_msgs__msg__Bool msg;
   rclc_support_t support;
   rcl_allocator_t allocator;
   rcl_node_t node;
@@ -525,27 +525,26 @@ void StartDefaultTask(void *argument)
   rclc_support_init(&support, 0, NULL, &allocator);
 
   // create node
-  rclc_node_init_default(&node, "cubemx_node", "", &support);
+  rclc_node_init_default(&node, "stm32_node", "orca_auv_namespace", &support);
 
   // create publisher
   rclc_publisher_init_default(
     &publisher,
     &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
-    "cubemx_publisher");
-
-  msg.data = 0;
+    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
+    "kill_switch_publisher");
 
   /* Infinite loop */
   for(;;)
   {
+    msg.data = is_kill_switch_closed();
+
     rcl_ret_t ret = rcl_publish(&publisher, &msg, NULL);
     if (ret != RCL_RET_OK)
     {
       printf("Error publishing (line %d)\n", __LINE__); 
     }
     
-    msg.data++;
     osDelay(1);
   }
   /* USER CODE END 5 */

@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include <rmw_microros/rmw_microros.h>
 #include <rcl/allocator.h>
 
 bool cubemx_transport_open(struct uxrCustomTransport * transport);

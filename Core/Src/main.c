@@ -24,9 +24,9 @@
 /* USER CODE BEGIN Includes */
 #include "micro_ros_configuration.h"
 #include "motor_pwm_esc_driver.h"
+#include "kill_switch_driver.h"
 
-#include <rcl/publisher.h>
-#include <rclc/types.h>
+#include <rclc/rclc.h>
 
 #include <std_msgs/msg/bool.h>
 /* USER CODE END Includes */

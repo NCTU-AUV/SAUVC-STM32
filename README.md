@@ -13,4 +13,15 @@ Use STM32CubeMX 6.12.0 to generate code. Note that STM32CubeMX 6.12.1 seems to h
 
 ## Build
 
-Use `make` in the project directory.
+Execute the Micro-ROS static library generation tool. See [micro_ros_stm32cubemx_utils/README.md](micro_ros_stm32cubemx_utils/README.md).
+
+```bash
+docker pull microros/micro_ros_static_library_builder:humble
+docker run -it --rm -v $(pwd):/project --env MICROROS_LIBRARY_FOLDER=micro_ros_stm32cubemx_utils/microros_static_library microros/micro_ros_static_library_builder:humble
+```
+
+Compile the program.
+
+```bash
+make -j$(nproc)
+```

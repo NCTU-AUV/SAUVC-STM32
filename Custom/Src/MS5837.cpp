@@ -68,7 +68,7 @@ bool MS5837_init(TwoWire &wirePort) {
 
 	// Verify that data is correct with CRC
 	uint8_t crcRead = C[0] >> 12;
-	uint8_t crcCalculated = crc4(C);
+	uint8_t crcCalculated = MS5837_crc4(C);
 
 	if ( crcCalculated != crcRead ) {
 		return false; // CRC fail
@@ -153,7 +153,7 @@ void MS5837_read() {
 	D2_temp = (D2_temp << 8) | _i2cPort->read();
 	D2_temp = (D2_temp << 8) | _i2cPort->read();
 
-	calculate();
+	MS5837_calculate();
 }
 
 void MS5837_calculate() {
@@ -240,11 +240,11 @@ float MS5837_temperature() {
 // In order to calculate the correct depth, the actual atmospheric pressure should be measured once in air, and
 // that value should subtracted for subsequent depth calculations.
 float MS5837_depth() {
-	return (pressure(MS5837::Pa)-101300)/(fluidDensity*9.80665);
+	return (MS5837_pressure(MS5837_Pa)-101300)/(fluidDensity*9.80665);
 }
 
 float MS5837_altitude() {
-	return (1-pow((pressure()/1013.25),.190284))*145366.45*.3048;
+	return (1-pow((MS5837_pressure()/1013.25),.190284))*145366.45*.3048;
 }
 
 

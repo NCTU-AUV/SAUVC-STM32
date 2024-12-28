@@ -1,8 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <math.h>
-#include <stdlib.h>
-#include "i2c.h" // Replace with your platform-specific I2C library
+#include "i2c.h" // Replace with your I2C implementation header
 
 #define MS5837_ADDR 0x76
 #define MS5837_RESET 0x1E
@@ -11,19 +10,19 @@
 #define MS5837_CONVERT_D1_8192 0x4A
 #define MS5837_CONVERT_D2_8192 0x5A
 
-#define PA_CONVERSION 100.0f
-#define BAR_CONVERSION 0.001f
-#define MBAR_CONVERSION 1.0f
+const float Pa = 100.0f;
+const float bar = 0.001f;
+const float mbar = 1.0f;
 
-#define MS5837_30BA 0
-#define MS5837_02BA 1
-#define MS5837_UNRECOGNISED 255
+const uint8_t MS5837_30BA = 0;
+const uint8_t MS5837_02BA = 1;
+const uint8_t MS5837_UNRECOGNISED = 255;
 
-#define MS5837_02BA01 0x00
-#define MS5837_02BA21 0x15
-#define MS5837_30BA26 0x1A
+const uint8_t MS5837_02BA01 = 0x00;
+const uint8_t MS5837_02BA21 = 0x15;
+const uint8_t MS5837_30BA26 = 0x1A;
 
-static uint16_t C[7];
+static uint16_t C[8];
 static uint32_t D1_pres, D2_temp;
 static int32_t TEMP;
 static int32_t P;
@@ -31,19 +30,25 @@ static uint8_t model;
 static float fluidDensity = 1029;
 
 static uint8_t crc4(uint16_t n_prom[]);
-static void calculate(void);
+static void calculate();
 
 bool MS5837_init() {
-    // Reset the MS5837
-    I2C_WriteByte(MS5837_ADDR, MS5837_RESET);
+    // Send reset command
+    i2c_start(MS5837_ADDR);
+    i2c_write(MS5837_RESET);
+    i2c_stop();
+
+    // Wait for reset to complete
     delay(10);
 
-    // Read calibration values
+    // Read calibration values and CRC
     for (uint8_t i = 0; i < 7; i++) {
-        I2C_WriteByte(MS5837_ADDR, MS5837_PROM_READ + i * 2);
-        uint8_t data[2];
-        I2C_ReadBytes(MS5837_ADDR, data, 2);
-        C[i] = (data[0] << 8) | data[1];
+        i2c_start(MS5837_ADDR);
+        i2c_write(MS5837_PROM_READ + i * 2);
+        i2c_stop();
+
+        i2c_request(MS5837_ADDR, 2);
+        C[i] = (i2c_read() << 8) | i2c_read();
     }
 
     // Verify CRC
@@ -51,10 +56,11 @@ bool MS5837_init() {
     uint8_t crcCalculated = crc4(C);
 
     if (crcCalculated != crcRead) {
-        return false;
+        return false; // CRC fail
     }
 
     uint8_t version = (C[0] >> 5) & 0x7F;
+
     if (version == MS5837_02BA01 || version == MS5837_02BA21) {
         model = MS5837_02BA;
     } else if (version == MS5837_30BA26) {
@@ -72,27 +78,40 @@ void MS5837_setFluidDensity(float density) {
 
 void MS5837_read() {
     // Request D1 conversion
-    I2C_WriteByte(MS5837_ADDR, MS5837_CONVERT_D1_8192);
+    i2c_start(MS5837_ADDR);
+    i2c_write(MS5837_CONVERT_D1_8192);
+    i2c_stop();
+
     delay(20);
 
-    I2C_WriteByte(MS5837_ADDR, MS5837_ADC_READ);
-    uint8_t data[3];
-    I2C_ReadBytes(MS5837_ADDR, data, 3);
-    D1_pres = (data[0] << 16) | (data[1] << 8) | data[2];
+    // Read D1
+    i2c_start(MS5837_ADDR);
+    i2c_write(MS5837_ADC_READ);
+    i2c_stop();
+
+    i2c_request(MS5837_ADDR, 3);
+    D1_pres = (i2c_read() << 16) | (i2c_read() << 8) | i2c_read();
 
     // Request D2 conversion
-    I2C_WriteByte(MS5837_ADDR, MS5837_CONVERT_D2_8192);
+    i2c_start(MS5837_ADDR);
+    i2c_write(MS5837_CONVERT_D2_8192);
+    i2c_stop();
+
     delay(20);
 
-    I2C_WriteByte(MS5837_ADDR, MS5837_ADC_READ);
-    I2C_ReadBytes(MS5837_ADDR, data, 3);
-    D2_temp = (data[0] << 16) | (data[1] << 8) | data[2];
+    // Read D2
+    i2c_start(MS5837_ADDR);
+    i2c_write(MS5837_ADC_READ);
+    i2c_stop();
+
+    i2c_request(MS5837_ADDR, 3);
+    D2_temp = (i2c_read() << 16) | (i2c_read() << 8) | i2c_read();
 
     calculate();
 }
 
 float MS5837_pressure(float conversion) {
-    return model == MS5837_02BA ? P * conversion / 100.0f : P * conversion / 10.0f;
+    return (model == MS5837_02BA) ? P * conversion / 100.0f : P * conversion / 10.0f;
 }
 
 float MS5837_temperature() {
@@ -100,15 +119,15 @@ float MS5837_temperature() {
 }
 
 float MS5837_depth() {
-    return (MS5837_pressure(PA_CONVERSION) - 101300) / (fluidDensity * 9.80665);
+    return (MS5837_pressure(Pa) - 101300) / (fluidDensity * 9.80665);
 }
 
 float MS5837_altitude() {
-    return (1 - pow((MS5837_pressure() / 1013.25), 0.190284)) * 145366.45 * 0.3048;
+    return (1 - pow((MS5837_pressure() / 1013.25), .190284)) * 145366.45 * .3048;
 }
 
 static void calculate() {
-    int32_t dT = D2_temp - ((uint32_t)C[5] << 8);
+    int32_t dT = D2_temp - (uint32_t)C[5] * 256;
     int64_t SENS, OFF;
 
     if (model == MS5837_02BA) {
@@ -122,7 +141,18 @@ static void calculate() {
     }
 
     TEMP = 2000 + ((int64_t)dT * C[6]) / 8388608;
-    // Additional compensation logic here if needed
+
+    if (model == MS5837_02BA && TEMP / 100 < 20) {
+        int32_t Ti = (11 * dT * dT) / 34359738368;
+        int64_t OFFi = (31 * (TEMP - 2000) * (TEMP - 2000)) / 8;
+        int64_t SENSi = (63 * (TEMP - 2000) * (TEMP - 2000)) / 32;
+
+        OFF -= OFFi;
+        SENS -= SENSi;
+        TEMP -= Ti;
+    }
+
+    P = (D1_pres * SENS / 2097152 - OFF) / ((model == MS5837_02BA) ? 32768 : 8192);
 }
 
 static uint8_t crc4(uint16_t n_prom[]) {
@@ -131,20 +161,12 @@ static uint8_t crc4(uint16_t n_prom[]) {
     n_prom[7] = 0;
 
     for (uint8_t i = 0; i < 16; i++) {
-        if (i % 2 == 1) {
-            n_rem ^= (n_prom[i >> 1] & 0x00FF);
-        } else {
-            n_rem ^= (n_prom[i >> 1] >> 8);
-        }
+        n_rem ^= (i % 2) ? (n_prom[i >> 1] & 0x00FF) : (n_prom[i >> 1] >> 8);
 
         for (uint8_t n_bit = 8; n_bit > 0; n_bit--) {
-            if (n_rem & 0x8000) {
-                n_rem = (n_rem << 1) ^ 0x3000;
-            } else {
-                n_rem = (n_rem << 1);
-            }
+            n_rem = (n_rem & 0x8000) ? (n_rem << 1) ^ 0x3000 : (n_rem << 1);
         }
     }
 
-    return (n_rem >> 12) & 0xF;
+    return (n_rem >> 12) & 0x000F;
 }

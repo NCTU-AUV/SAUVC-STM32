@@ -45,7 +45,7 @@ extern const uint8_t MS5837_MS5837_30BA;
 extern const uint8_t MS5837_MS5837_02BA;
 extern const uint8_t MS5837_MS5837_UNRECOGNISED;
 
-MS5837_MS5837();
+void MS5837_MS5837();
 
 bool MS5837_init(TwoWire &wirePort = Wire);
 bool MS5837_begin(TwoWire &wirePort = Wire); // Calls init()

@@ -1,5 +1,4 @@
 #include "MS5837.h"
-#include <Wire.h>
 
 const uint8_t MS5837_ADDR = 0x76;
 const uint8_t MS5837_RESET = 0x1E;
@@ -8,27 +7,45 @@ const uint8_t MS5837_PROM_READ = 0xA0;
 const uint8_t MS5837_CONVERT_D1_8192 = 0x4A;
 const uint8_t MS5837_CONVERT_D2_8192 = 0x5A;
 
-const float MS5837::Pa = 100.0f;
-const float MS5837::bar = 0.001f;
-const float MS5837::mbar = 1.0f;
+const float MS5837_Pa = 100.0f;
+const float MS5837_bar = 0.001f;
+const float MS5837_mbar = 1.0f;
 
-const uint8_t MS5837::MS5837_30BA = 0;
-const uint8_t MS5837::MS5837_02BA = 1;
-const uint8_t MS5837::MS5837_UNRECOGNISED = 255;
+const uint8_t MS5837_MS5837_30BA = 0;
+const uint8_t MS5837_MS5837_02BA = 1;
+const uint8_t MS5837_MS5837_UNRECOGNISED = 255;
 
 const uint8_t MS5837_02BA01 = 0x00; // Sensor version: From MS5837_02BA datasheet Version PROM Word 0
 const uint8_t MS5837_02BA21 = 0x15; // Sensor version: From MS5837_02BA datasheet Version PROM Word 0
 const uint8_t MS5837_30BA26 = 0x1A; // Sensor version: From MS5837_30BA datasheet Version PROM Word 0
 
-MS5837::MS5837() {
+//This stores the requested i2c port
+static TwoWire * _i2cPort;
+
+static uint16_t C[8];
+static uint32_t D1_pres, D2_temp;
+static int32_t TEMP;
+static int32_t P;
+static uint8_t _model;
+
+static float fluidDensity;
+
+/** Performs calculations per the sensor data sheet for conversion and
+ *  second order compensation.
+ */
+static void MS5837_calculate();
+
+static uint8_t MS5837_crc4(uint16_t n_prom[]);
+
+void MS5837_MS5837() {
 	fluidDensity = 1029;
 }
 
-bool MS5837::begin(TwoWire &wirePort) {
+bool MS5837_begin(TwoWire &wirePort) {
 	return (init(wirePort));
 }
 
-bool MS5837::init(TwoWire &wirePort) {
+bool MS5837_init(TwoWire &wirePort) {
 	_i2cPort = &wirePort; //Grab which port the user wants us to use
 
 	// Reset the MS5837, per datasheet
@@ -83,19 +100,19 @@ bool MS5837::init(TwoWire &wirePort) {
 	return true;
 }
 
-void MS5837::setModel(uint8_t model) {
+void MS5837_setModel(uint8_t model) {
 	_model = model;
 }
 
-uint8_t MS5837::getModel() {
+uint8_t MS5837_getModel() {
 	return (_model);
 }
 
-void MS5837::setFluidDensity(float density) {
+void MS5837_setFluidDensity(float density) {
 	fluidDensity = density;
 }
 
-void MS5837::read() {
+void MS5837_read() {
 	//Check that _i2cPort is not NULL (i.e. has the user forgoten to call .init or .begin?)
 	if (_i2cPort == NULL)
 	{
@@ -139,7 +156,7 @@ void MS5837::read() {
 	calculate();
 }
 
-void MS5837::calculate() {
+void MS5837_calculate() {
 	// Given C1-C6 and D1, D2, calculated TEMP and P
 	// Do conversion first and then second order temp compensation
 
@@ -203,7 +220,7 @@ void MS5837::calculate() {
 	}
 }
 
-float MS5837::pressure(float conversion) {
+float MS5837_pressure(float conversion) {
 	if ( _model == MS5837_02BA ) {
 		return P*conversion/100.0f;
 	}
@@ -212,7 +229,7 @@ float MS5837::pressure(float conversion) {
 	}
 }
 
-float MS5837::temperature() {
+float MS5837_temperature() {
 	return TEMP/100.0f;
 }
 
@@ -222,16 +239,16 @@ float MS5837::temperature() {
 // If the atmospheric pressure is not 101300 at the time of reading, the depth reported will be offset
 // In order to calculate the correct depth, the actual atmospheric pressure should be measured once in air, and
 // that value should subtracted for subsequent depth calculations.
-float MS5837::depth() {
+float MS5837_depth() {
 	return (pressure(MS5837::Pa)-101300)/(fluidDensity*9.80665);
 }
 
-float MS5837::altitude() {
+float MS5837_altitude() {
 	return (1-pow((pressure()/1013.25),.190284))*145366.45*.3048;
 }
 
 
-uint8_t MS5837::crc4(uint16_t n_prom[]) {
+uint8_t MS5837_crc4(uint16_t n_prom[]) {
 	uint16_t n_rem = 0;
 
 	n_prom[0] = ((n_prom[0]) & 0x0FFF);

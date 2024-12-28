@@ -1,5 +1,7 @@
 #include "MS5837.h"
 
+#include <math.h>
+
 static const uint8_t MS5837_ADDR = 0x76;
 static const uint8_t MS5837_RESET = 0x1E;
 static const uint8_t MS5837_ADC_READ = 0x00;
@@ -79,19 +81,19 @@ bool MS5837_init(TwoWire &wirePort) {
 	// Set _model according to the sensor version
 	if (version == MS5837_02BA01)
 	{
-		_model = MS5837_02BA;
+		_model = MS5837_MS5837_02BA;
 	}
 	else if (version == MS5837_02BA21)
 	{
-		_model = MS5837_02BA;
+		_model = MS5837_MS5837_02BA;
 	}
 	else if (version == MS5837_30BA26)
 	{
-		_model = MS5837_30BA;
+		_model = MS5837_MS5837_30BA;
 	}
 	else
 	{
-		_model = MS5837_UNRECOGNISED;
+		_model = MS5837_MS5837_UNRECOGNISED;
 	}
 	// The sensor has passed the CRC check, so we should return true even if
 	// the sensor version is unrecognised.
@@ -171,7 +173,7 @@ void MS5837_calculate() {
 
 	// Terms called
 	dT = D2_temp-uint32_t(C[5])*256l;
-	if ( _model == MS5837_02BA ) {
+	if ( _model == MS5837_MS5837_02BA ) {
 		SENS = int64_t(C[1])*65536l+(int64_t(C[3])*dT)/128l;
 		OFF = int64_t(C[2])*131072l+(int64_t(C[4])*dT)/64l;
 		P = (D1_pres*SENS/(2097152l)-OFF)/(32768l);
@@ -185,7 +187,7 @@ void MS5837_calculate() {
 	TEMP = 2000l+int64_t(dT)*C[6]/8388608LL;
 
 	//Second order compensation
-	if ( _model == MS5837_02BA ) {
+	if ( _model == MS5837_MS5837_02BA ) {
 		if((TEMP/100)<20){         //Low temp
 			Ti = (11*int64_t(dT)*int64_t(dT))/(34359738368LL);
 			OFFi = (31*(TEMP-2000)*(TEMP-2000))/8;
@@ -213,7 +215,7 @@ void MS5837_calculate() {
 
 	TEMP = (TEMP-Ti);
 
-	if ( _model == MS5837_02BA ) {
+	if ( _model == MS5837_MS5837_02BA ) {
 		P = (((D1_pres*SENS2)/2097152l-OFF2)/32768l);
 	} else {
 		P = (((D1_pres*SENS2)/2097152l-OFF2)/8192l);
@@ -221,7 +223,7 @@ void MS5837_calculate() {
 }
 
 float MS5837_pressure(float conversion) {
-	if ( _model == MS5837_02BA ) {
+	if ( _model == MS5837_MS5837_02BA ) {
 		return P*conversion/100.0f;
 	}
 	else {

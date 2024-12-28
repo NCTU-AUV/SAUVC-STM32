@@ -37,6 +37,9 @@ THE SOFTWARE.
 #ifndef MS5837_H_BLUEROBOTICS
 #define MS5837_H_BLUEROBOTICS
 
+#include <stdint.h>
+#include <stdbool.h>
+
 extern const float MS5837_Pa;
 extern const float MS5837_bar;
 extern const float MS5837_mbar;

@@ -42,7 +42,7 @@ void MS5837_MS5837() {
 }
 
 bool MS5837_begin(TwoWire &wirePort) {
-	return (init(wirePort));
+	return (MS5837_init(wirePort));
 }
 
 bool MS5837_init(TwoWire &wirePort) {

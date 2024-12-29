@@ -65,8 +65,9 @@ bool MS5837_init(I2C_HandleTypeDef * hi2cPort) {
 	for ( uint8_t i = 0 ; i < 7 ; i++ ) {
 		i2c_write(MS5837_PROM_READ+i*2);
 
-		_i2cPort->requestFrom(MS5837_ADDR,2);
-		C[i] = (_i2cPort->read() << 8) | _i2cPort->read();
+		uint8_t data_buffer[2];
+		HAL_I2C_Master_Receive(_hi2cPort, MS5837_ADDR, data_buffer, 2, 1000);
+		C[i] = (data_buffer[0] << 8) | data_buffer[1];
 	}
 
 	// Verify that data is correct with CRC
@@ -116,6 +117,8 @@ void MS5837_setFluidDensity(float density) {
 }
 
 void MS5837_read() {
+	uint8_t data_buffer[3];
+
 	//Check that _i2cPort is not NULL (i.e. has the user forgoten to call .init or .begin?)
 	if (_i2cPort == NULL)
 	{
@@ -129,11 +132,11 @@ void MS5837_read() {
 
 	i2c_write(MS5837_ADC_READ);
 
-	_i2cPort->requestFrom(MS5837_ADDR,3);
+	HAL_I2C_Master_Receive(_hi2cPort, MS5837_ADDR, data_buffer, 3, 1000);
 	D1_pres = 0;
-	D1_pres = _i2cPort->read();
-	D1_pres = (D1_pres << 8) | _i2cPort->read();
-	D1_pres = (D1_pres << 8) | _i2cPort->read();
+	D1_pres = data_buffer[0];
+	D1_pres = (D1_pres << 8) | data_buffer[1];
+	D1_pres = (D1_pres << 8) | data_buffer[2];
 
 	// Request D2 conversion
 	i2c_write(MS5837_CONVERT_D2_8192);
@@ -142,11 +145,11 @@ void MS5837_read() {
 
 	i2c_write(MS5837_ADC_READ);
 
-	_i2cPort->requestFrom(MS5837_ADDR,3);
+	HAL_I2C_Master_Receive(_hi2cPort, MS5837_ADDR, data_buffer, 3, 1000);
 	D2_temp = 0;
-	D2_temp = _i2cPort->read();
-	D2_temp = (D2_temp << 8) | _i2cPort->read();
-	D2_temp = (D2_temp << 8) | _i2cPort->read();
+	D2_temp = data_buffer[0];
+	D2_temp = (D2_temp << 8) | data_buffer[1];
+	D2_temp = (D2_temp << 8) | data_buffer[2];
 
 	MS5837_calculate();
 }

@@ -59,7 +59,7 @@ bool MS5837_init(I2C_HandleTypeDef * hi2cPort) {
 	i2c_write(MS5837_RESET);
 
 	// Wait for reset to complete
-	delay(10);
+	HAL_Delay(10);
 
 	// Read calibration values and CRC
 	for ( uint8_t i = 0 ; i < 7 ; i++ ) {
@@ -128,7 +128,7 @@ void MS5837_read() {
 	// Request D1 conversion
 	i2c_write(MS5837_CONVERT_D1_8192);
 
-	delay(20); // Max conversion time per datasheet
+	HAL_Delay(20); // Max conversion time per datasheet
 
 	i2c_write(MS5837_ADC_READ);
 
@@ -141,7 +141,7 @@ void MS5837_read() {
 	// Request D2 conversion
 	i2c_write(MS5837_CONVERT_D2_8192);
 
-	delay(20); // Max conversion time per datasheet
+	HAL_Delay(20); // Max conversion time per datasheet
 
 	i2c_write(MS5837_ADC_READ);
 

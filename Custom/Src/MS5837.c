@@ -22,7 +22,7 @@ static const uint8_t MS5837_02BA21 = 0x15; // Sensor version: From MS5837_02BA d
 static const uint8_t MS5837_30BA26 = 0x1A; // Sensor version: From MS5837_30BA datasheet Version PROM Word 0
 
 //This stores the requested i2c port
-static TwoWire * _i2cPort;
+static I2C_HandleTypeDef * _hi2cPort;
 
 static uint16_t C[8];
 static uint32_t D1_pres, D2_temp;
@@ -43,12 +43,12 @@ void MS5837_MS5837() {
 	fluidDensity = 1029;
 }
 
-bool MS5837_begin(TwoWire &wirePort) {
-	return (MS5837_init(wirePort));
+bool MS5837_begin(I2C_HandleTypeDef * hi2cPort) {
+	return (MS5837_init(hi2cPort));
 }
 
-bool MS5837_init(TwoWire &wirePort) {
-	_i2cPort = &wirePort; //Grab which port the user wants us to use
+bool MS5837_init(I2C_HandleTypeDef * hi2cPort) {
+	_hi2cPort = hi2cPort; //Grab which port the user wants us to use
 
 	// Reset the MS5837, per datasheet
 	_i2cPort->beginTransmission(MS5837_ADDR);

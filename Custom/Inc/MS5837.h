@@ -40,6 +40,8 @@ THE SOFTWARE.
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "stm32f4xx_hal_i2c.h"
+
 extern const float MS5837_Pa;
 extern const float MS5837_bar;
 extern const float MS5837_mbar;
@@ -50,8 +52,8 @@ extern const uint8_t MS5837_MS5837_UNRECOGNISED;
 
 void MS5837_MS5837();
 
-bool MS5837_init(TwoWire &wirePort = Wire);
-bool MS5837_begin(TwoWire &wirePort = Wire); // Calls init()
+bool MS5837_init(I2C_HandleTypeDef * hi2cPort);
+bool MS5837_begin(I2C_HandleTypeDef * hi2cPort); // Calls init()
 
 /** Set model of MS5837 sensor. Valid options are MS5837::MS5837_30BA (default)
  * and MS5837::MS5837_02BA.

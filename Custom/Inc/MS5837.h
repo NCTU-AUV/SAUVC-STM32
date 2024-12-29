@@ -40,7 +40,7 @@ THE SOFTWARE.
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "stm32f4xx_hal_i2c.h"
+#include "stm32f4xx_hal.h"
 
 extern const float MS5837_Pa;
 extern const float MS5837_bar;

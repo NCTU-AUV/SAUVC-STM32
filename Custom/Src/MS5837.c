@@ -172,30 +172,30 @@ void MS5837_calculate() {
 	int64_t SENS2 = 0;
 
 	// Terms called
-	dT = D2_temp-uint32_t(C[5])*256l;
+	dT = D2_temp-(uint32_t)(C[5])*256l;
 	if ( _model == MS5837_MS5837_02BA ) {
-		SENS = int64_t(C[1])*65536l+(int64_t(C[3])*dT)/128l;
-		OFF = int64_t(C[2])*131072l+(int64_t(C[4])*dT)/64l;
+		SENS = (int64_t)(C[1])*65536l+((int64_t)(C[3])*dT)/128l;
+		OFF = (int64_t)(C[2])*131072l+((int64_t)(C[4])*dT)/64l;
 		P = (D1_pres*SENS/(2097152l)-OFF)/(32768l);
 	} else {
-		SENS = int64_t(C[1])*32768l+(int64_t(C[3])*dT)/256l;
-		OFF = int64_t(C[2])*65536l+(int64_t(C[4])*dT)/128l;
+		SENS = (int64_t)(C[1])*32768l+((int64_t)(C[3])*dT)/256l;
+		OFF = (int64_t)(C[2])*65536l+((int64_t)(C[4])*dT)/128l;
 		P = (D1_pres*SENS/(2097152l)-OFF)/(8192l);
 	}
 
 	// Temp conversion
-	TEMP = 2000l+int64_t(dT)*C[6]/8388608LL;
+	TEMP = 2000l+(int64_t)(dT)*C[6]/8388608LL;
 
 	//Second order compensation
 	if ( _model == MS5837_MS5837_02BA ) {
 		if((TEMP/100)<20){         //Low temp
-			Ti = (11*int64_t(dT)*int64_t(dT))/(34359738368LL);
+			Ti = (11*(int64_t)(dT)*(int64_t)(dT))/(34359738368LL);
 			OFFi = (31*(TEMP-2000)*(TEMP-2000))/8;
 			SENSi = (63*(TEMP-2000)*(TEMP-2000))/32;
 		}
 	} else {
 		if((TEMP/100)<20){         //Low temp
-			Ti = (3*int64_t(dT)*int64_t(dT))/(8589934592LL);
+			Ti = (3*(int64_t)(dT)*(int64_t)(dT))/(8589934592LL);
 			OFFi = (3*(TEMP-2000)*(TEMP-2000))/2;
 			SENSi = (5*(TEMP-2000)*(TEMP-2000))/8;
 			if((TEMP/100)<-15){    //Very low temp

@@ -47,22 +47,23 @@ bool MS5837_begin(I2C_HandleTypeDef * hi2cPort) {
 	return (MS5837_init(hi2cPort));
 }
 
+static void i2c_write(uint8_t value)
+{
+	HAL_I2C_Master_Transmit(_hi2cPort, MS5837_ADDR, &value, sizeof(value), 1000);
+}
+
 bool MS5837_init(I2C_HandleTypeDef * hi2cPort) {
 	_hi2cPort = hi2cPort; //Grab which port the user wants us to use
 
 	// Reset the MS5837, per datasheet
-	_i2cPort->beginTransmission(MS5837_ADDR);
-	_i2cPort->write(MS5837_RESET);
-	_i2cPort->endTransmission();
+	i2c_write(MS5837_RESET);
 
 	// Wait for reset to complete
 	delay(10);
 
 	// Read calibration values and CRC
 	for ( uint8_t i = 0 ; i < 7 ; i++ ) {
-		_i2cPort->beginTransmission(MS5837_ADDR);
-		_i2cPort->write(MS5837_PROM_READ+i*2);
-		_i2cPort->endTransmission();
+		i2c_write(MS5837_PROM_READ+i*2);
 
 		_i2cPort->requestFrom(MS5837_ADDR,2);
 		C[i] = (_i2cPort->read() << 8) | _i2cPort->read();
@@ -122,15 +123,11 @@ void MS5837_read() {
 	}
 
 	// Request D1 conversion
-	_i2cPort->beginTransmission(MS5837_ADDR);
-	_i2cPort->write(MS5837_CONVERT_D1_8192);
-	_i2cPort->endTransmission();
+	i2c_write(MS5837_CONVERT_D1_8192);
 
 	delay(20); // Max conversion time per datasheet
 
-	_i2cPort->beginTransmission(MS5837_ADDR);
-	_i2cPort->write(MS5837_ADC_READ);
-	_i2cPort->endTransmission();
+	i2c_write(MS5837_ADC_READ);
 
 	_i2cPort->requestFrom(MS5837_ADDR,3);
 	D1_pres = 0;
@@ -139,15 +136,11 @@ void MS5837_read() {
 	D1_pres = (D1_pres << 8) | _i2cPort->read();
 
 	// Request D2 conversion
-	_i2cPort->beginTransmission(MS5837_ADDR);
-	_i2cPort->write(MS5837_CONVERT_D2_8192);
-	_i2cPort->endTransmission();
+	i2c_write(MS5837_CONVERT_D2_8192);
 
 	delay(20); // Max conversion time per datasheet
 
-	_i2cPort->beginTransmission(MS5837_ADDR);
-	_i2cPort->write(MS5837_ADC_READ);
-	_i2cPort->endTransmission();
+	i2c_write(MS5837_ADC_READ);
 
 	_i2cPort->requestFrom(MS5837_ADDR,3);
 	D2_temp = 0;

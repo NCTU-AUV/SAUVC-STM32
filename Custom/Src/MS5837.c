@@ -120,7 +120,7 @@ void MS5837_read() {
 	uint8_t data_buffer[3];
 
 	//Check that _i2cPort is not NULL (i.e. has the user forgoten to call .init or .begin?)
-	if (_i2cPort == NULL)
+	if (_hi2cPort == NULL)
 	{
 		return;
 	}

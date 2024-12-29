@@ -225,7 +225,7 @@ void MS5837_calculate() {
 float MS5837_pressure_default()
 {
 	float conversion = 1.0f;
-	MS5837_pressure(conversion);
+	return MS5837_pressure(conversion);
 }
 
 float MS5837_pressure(float conversion) {

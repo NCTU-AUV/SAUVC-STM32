@@ -72,7 +72,8 @@ void MS5837_read();
 
 /** Pressure returned in mbar or mbar*conversion rate.
  */
-float MS5837_pressure(float conversion = 1.0f);
+float MS5837_pressure_default();
+float MS5837_pressure(float conversion);
 
 /** Temperature returned in deg C.
  */

@@ -222,6 +222,12 @@ void MS5837_calculate() {
 	}
 }
 
+float MS5837_pressure_default()
+{
+	float conversion = 1.0f;
+	MS5837_pressure(conversion);
+}
+
 float MS5837_pressure(float conversion) {
 	if ( _model == MS5837_MS5837_02BA ) {
 		return P*conversion/100.0f;

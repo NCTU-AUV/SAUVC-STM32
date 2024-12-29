@@ -252,7 +252,7 @@ float MS5837_depth() {
 }
 
 float MS5837_altitude() {
-	return (1-pow((MS5837_pressure()/1013.25),.190284))*145366.45*.3048;
+	return (1-pow((MS5837_pressure_default()/1013.25),.190284))*145366.45*.3048;
 }
 
 

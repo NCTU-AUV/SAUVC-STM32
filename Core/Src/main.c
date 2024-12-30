@@ -63,6 +63,13 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 3000 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for barometerTask */
+osThreadId_t barometerTaskHandle;
+const osThreadAttr_t barometerTask_attributes = {
+  .name = "barometerTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -76,6 +83,7 @@ static void MX_TIM8_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_I2C1_Init(void);
 void StartDefaultTask(void *argument);
+void StartBarometerTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -146,6 +154,9 @@ int main(void)
   /* Create the thread(s) */
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+
+  /* creation of barometerTask */
+  barometerTaskHandle = osThreadNew(StartBarometerTask, NULL, &barometerTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -548,6 +559,24 @@ void StartDefaultTask(void *argument)
     osDelay(1);
   }
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_StartBarometerTask */
+/**
+* @brief Function implementing the barometerTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartBarometerTask */
+void StartBarometerTask(void *argument)
+{
+  /* USER CODE BEGIN StartBarometerTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartBarometerTask */
 }
 
 /**

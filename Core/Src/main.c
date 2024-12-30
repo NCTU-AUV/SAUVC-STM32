@@ -571,9 +571,23 @@ void StartDefaultTask(void *argument)
 void StartBarometerTask(void *argument)
 {
   /* USER CODE BEGIN StartBarometerTask */
+  MS5837_MS5837();
+
+  while (!MS5837_init(&hi2c1)) {
+    printf("Init failed!"); 
+    osDelay(5000);
+  }
+
+  MS5837_setFluidDensity(997);
   /* Infinite loop */
   for(;;)
   {
+    MS5837_read();
+
+    MS5837_pressure_default();
+    MS5837_temperature();
+    MS5837_depth();
+    MS5837_altitude();
     osDelay(1);
   }
   /* USER CODE END StartBarometerTask */

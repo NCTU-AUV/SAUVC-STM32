@@ -49,7 +49,7 @@ bool MS5837_begin(I2C_HandleTypeDef * hi2cPort) {
 
 static void i2c_write(uint8_t value)
 {
-	HAL_I2C_Master_Transmit(_hi2cPort, MS5837_ADDR, &value, sizeof(value), 1000);
+	HAL_I2C_Master_Transmit(_hi2cPort, MS5837_ADDR << 1, &value, sizeof(value), 1000);
 }
 
 bool MS5837_init(I2C_HandleTypeDef * hi2cPort) {
@@ -66,7 +66,7 @@ bool MS5837_init(I2C_HandleTypeDef * hi2cPort) {
 		i2c_write(MS5837_PROM_READ+i*2);
 
 		uint8_t data_buffer[2];
-		HAL_I2C_Master_Receive(_hi2cPort, MS5837_ADDR, data_buffer, 2, 1000);
+		HAL_I2C_Master_Receive(_hi2cPort, MS5837_ADDR << 1, data_buffer, 2, 1000);
 		C[i] = (data_buffer[0] << 8) | data_buffer[1];
 	}
 
@@ -132,7 +132,7 @@ void MS5837_read() {
 
 	i2c_write(MS5837_ADC_READ);
 
-	HAL_I2C_Master_Receive(_hi2cPort, MS5837_ADDR, data_buffer, 3, 1000);
+	HAL_I2C_Master_Receive(_hi2cPort, MS5837_ADDR << 1, data_buffer, 3, 1000);
 	D1_pres = 0;
 	D1_pres = data_buffer[0];
 	D1_pres = (D1_pres << 8) | data_buffer[1];
@@ -145,7 +145,7 @@ void MS5837_read() {
 
 	i2c_write(MS5837_ADC_READ);
 
-	HAL_I2C_Master_Receive(_hi2cPort, MS5837_ADDR, data_buffer, 3, 1000);
+	HAL_I2C_Master_Receive(_hi2cPort, MS5837_ADDR << 1, data_buffer, 3, 1000);
 	D2_temp = 0;
 	D2_temp = data_buffer[0];
 	D2_temp = (D2_temp << 8) | data_buffer[1];

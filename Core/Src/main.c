@@ -588,7 +588,7 @@ void StartBarometerTask(void *argument)
     MS5837_temperature();
     MS5837_depth();
     MS5837_altitude();
-    osDelay(1);
+    osDelay(1000);
   }
   /* USER CODE END StartBarometerTask */
 }

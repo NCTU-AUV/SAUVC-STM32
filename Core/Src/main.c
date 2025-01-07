@@ -524,11 +524,11 @@ void StartDefaultTask(void *argument)
 
   // micro-ROS app
 
-  rcl_publisher_t publisher;
-  std_msgs__msg__Bool msg;
+  rcl_publisher_t is_kill_switch_closed_publisher;
+  std_msgs__msg__Bool is_kill_switch_closed_msg;
   rclc_support_t support;
   rcl_allocator_t allocator;
-  rcl_node_t node;
+  rcl_node_t kill_switch_node;
 
   allocator = rcl_get_default_allocator();
 
@@ -536,21 +536,21 @@ void StartDefaultTask(void *argument)
   rclc_support_init(&support, 0, NULL, &allocator);
 
   // create node
-  rclc_node_init_default(&node, "stm32_node", "orca_auv_namespace", &support);
+  rclc_node_init_default(&kill_switch_node, "kill_switch_node", "orca_auv", &support);
 
   // create publisher
   rclc_publisher_init_default(
-    &publisher,
-    &node,
+    &is_kill_switch_closed_publisher,
+    &kill_switch_node,
     ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
     "kill_switch_publisher");
 
   /* Infinite loop */
   for(;;)
   {
-    msg.data = is_kill_switch_closed();
+    is_kill_switch_closed_msg.data = is_kill_switch_closed();
 
-    rcl_ret_t ret = rcl_publish(&publisher, &msg, NULL);
+    rcl_ret_t ret = rcl_publish(&is_kill_switch_closed_publisher, &is_kill_switch_closed_msg, NULL);
     if (ret != RCL_RET_OK)
     {
       printf("Error publishing (line %d)\n", __LINE__); 

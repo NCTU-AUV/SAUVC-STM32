@@ -20,7 +20,7 @@ void initialize_kill_switch_node(rclc_support_t *support)
         &is_kill_switch_closed_publisher,
         &kill_switch_node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
-        "kill_switch_publisher"
+        "is_kill_switch_closed"
     );
 }
 

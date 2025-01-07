@@ -1,5 +1,7 @@
 #include "MS5837.h"
 
+#include "cmsis_os.h"
+
 #include <math.h>
 
 static const uint8_t MS5837_ADDR = 0x76;

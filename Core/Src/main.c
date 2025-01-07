@@ -579,17 +579,17 @@ void StartBarometerTask(void *argument)
   // }
 
   // MS5837_setFluidDensity(997);
-  // /* Infinite loop */
-  // for(;;)
-  // {
+  /* Infinite loop */
+  for(;;)
+  {
   //   MS5837_read();
 
   //   MS5837_pressure_default();
   //   MS5837_temperature();
   //   MS5837_depth();
   //   MS5837_altitude();
-  //   osDelay(1000);
-  // }
+    osDelay(1000);
+  }
   /* USER CODE END StartBarometerTask */
 }
 

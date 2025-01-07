@@ -523,9 +523,9 @@ void StartDefaultTask(void *argument)
 
   // micro-ROS app
   rcl_allocator_t allocator = rcl_get_default_allocator();
-  rclc_support_t support;
 
   //create init_options
+  rclc_support_t support;
   rclc_support_init(&support, 0, NULL, &allocator);
 
   rclc_executor_t executor = rclc_executor_get_zero_initialized_executor();

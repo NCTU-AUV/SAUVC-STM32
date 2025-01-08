@@ -3,6 +3,8 @@
 
 #include "stm32f4xx_hal.h"
 
+#include <stdint.h>
+
 typedef enum {
     MOTOR0 = 0,
     MOTOR1 = 1,

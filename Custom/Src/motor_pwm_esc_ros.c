@@ -36,8 +36,29 @@ static void initialize_is_pwm_output_on_publisher_for_all_motors(rcl_node_t *stm
 }
 
 
+static void publish_is_pwm_output_on_for_motor_number(MotorNumber motor_number)
+{
+    std_msgs__msg__Bool is_pwm_output_on_msg;
+    is_pwm_output_on_msg.data = is_pwm_output_on_for_motor_number(motor_number);
+
+    rcl_ret_t ret = rcl_publish(&(is_pwm_output_on_publishers[motor_number]), &is_pwm_output_on_msg, NULL);
+    if (ret != RCL_RET_OK)
+    {
+        printf("Error publishing (line %d)\n", __LINE__);
+    }
+}
+
+
 static void motor_pwm_esc_timer_callback(rcl_timer_t *, int64_t)
 {
+    publish_is_pwm_output_on_for_motor_number(MOTOR0);
+    publish_is_pwm_output_on_for_motor_number(MOTOR1);
+    publish_is_pwm_output_on_for_motor_number(MOTOR2);
+    publish_is_pwm_output_on_for_motor_number(MOTOR3);
+    publish_is_pwm_output_on_for_motor_number(MOTOR4);
+    publish_is_pwm_output_on_for_motor_number(MOTOR5);
+    publish_is_pwm_output_on_for_motor_number(MOTOR6);
+    publish_is_pwm_output_on_for_motor_number(MOTOR7);
 }
 
 

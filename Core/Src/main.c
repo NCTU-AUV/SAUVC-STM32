@@ -534,12 +534,12 @@ void StartDefaultTask(void *argument)
   rclc_node_init_default(&stm32_node, "stm32_node", "orca_auv", &support);
 
   rclc_executor_t executor = rclc_executor_get_zero_initialized_executor();
-  unsigned int num_handles = KILL_SWITCH_NUM_HANDLES;
+  unsigned int num_handles = KILL_SWITCH_NUM_HANDLES + MOTOR_PWM_ESC_NUM_HANDLES;
   printf("Debug: number of DDS handles: %u\n", num_handles);
   rclc_executor_init(&executor, &support.context, num_handles, &allocator);
 
   initialize_kill_switch_ros(&stm32_node, &support, &executor);
-  initialize_motor_pwm_esc_ros(&stm32_node);
+  initialize_motor_pwm_esc_ros(&stm32_node, &support, &executor);
 
   /* Infinite loop */
   for(;;)

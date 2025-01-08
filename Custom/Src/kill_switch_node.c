@@ -60,9 +60,6 @@ static void initialize_kill_switch_timer(rclc_support_t *support, rclc_executor_
     if (rc != RCL_RET_OK) {
         printf("Error in rclc_executor_add_timer.\n");
     }
-
-    previous_kill_switch_state = is_kill_switch_closed();
-    publish_kill_switch_state(previous_kill_switch_state);
 }
 
 
@@ -80,4 +77,7 @@ void initialize_kill_switch_node(rclc_support_t *support, rclc_executor_t *execu
     );
 
     initialize_kill_switch_timer(support, executor);
+
+    previous_kill_switch_state = is_kill_switch_closed();
+    publish_kill_switch_state(previous_kill_switch_state);
 }

@@ -179,7 +179,8 @@ C_SOURCES += Custom/Src/kill_switch_driver.c
 C_SOURCES += Custom/Src/motor_pwm_esc_driver.c
 C_SOURCES += Custom/Src/MS5837.c
 C_SOURCES += Custom/Src/kill_switch_ros.c
-C_SOURCES += Custom/Src/motor_pwm_esc_ros.c
+C_SOURCES += Custom/Src/motor_pwm_esc_ros/motor_pwm_esc_ros.c
+C_SOURCES += Custom/Src/motor_pwm_esc_ros/publish_is_pwm_output_on.c
 
 #######################################
 # micro-ROS addons

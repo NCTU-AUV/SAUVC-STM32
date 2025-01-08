@@ -24,7 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "micro_ros_configuration.h"
 #include "motor_pwm_esc_driver.h"
-#include "motor_pwm_esc_ros.h"
+#include "motor_pwm_esc_ros/motor_pwm_esc_ros.h"
 #include "kill_switch_driver.h"
 #include "kill_switch_ros.h"
 

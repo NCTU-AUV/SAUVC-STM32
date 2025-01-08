@@ -25,6 +25,7 @@
 #include "micro_ros_configuration.h"
 #include "motor_pwm_esc_driver.h"
 #include "motor_pwm_esc_node.h"
+#include "kill_switch_driver.h"
 #include "kill_switch_node.h"
 
 #include <rclc/rclc.h>
@@ -540,6 +541,11 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
+    if(is_kill_switch_closed())
+    {
+      stop_all_motors_pwm_output();
+    }
+
     rclc_executor_spin_some(&executor, RCL_MS_TO_NS(1000));
     
     osDelay(1);

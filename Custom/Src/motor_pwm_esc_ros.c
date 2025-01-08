@@ -8,14 +8,18 @@
 const unsigned int MOTOR_PWM_ESC_NUM_HANDLES = 1;
 
 
-rcl_publisher_t is_pwm_output_on_publishers[8];
+static struct {
+    rcl_publisher_t is_pwm_output_on_publishers;
+    bool previous_is_pwm_output_on_state;
+} motors_data[8];
+
 static rcl_timer_t motor_pwm_esc_timer;
 
 
 static void initialize_is_pwm_output_on_publisher_for_motor_number(MotorNumber motor_number, const char *topic_name, rcl_node_t *stm32_node)
 {
     rclc_publisher_init_default(
-        &(is_pwm_output_on_publishers[motor_number]),
+        &(motors_data[motor_number].is_pwm_output_on_publishers),
         stm32_node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
         topic_name
@@ -36,12 +40,12 @@ static void initialize_is_pwm_output_on_publisher_for_all_motors(rcl_node_t *stm
 }
 
 
-static void publish_is_pwm_output_on_for_motor_number(MotorNumber motor_number)
+static void publish_is_pwm_output_on_for_motor_number(MotorNumber motor_number, bool is_pwm_output_on_state)
 {
     std_msgs__msg__Bool is_pwm_output_on_msg;
-    is_pwm_output_on_msg.data = is_pwm_output_on_for_motor_number(motor_number);
+    is_pwm_output_on_msg.data = is_pwm_output_on_state;
 
-    rcl_ret_t ret = rcl_publish(&(is_pwm_output_on_publishers[motor_number]), &is_pwm_output_on_msg, NULL);
+    rcl_ret_t ret = rcl_publish(&(motors_data[motor_number].is_pwm_output_on_publishers), &is_pwm_output_on_msg, NULL);
     if (ret != RCL_RET_OK)
     {
         printf("Error publishing (line %d)\n", __LINE__);
@@ -49,16 +53,50 @@ static void publish_is_pwm_output_on_for_motor_number(MotorNumber motor_number)
 }
 
 
+static void publish_is_pwm_output_on_only_when_updated_for_motor_number(MotorNumber motor_number)
+{
+    bool current_is_pwm_output_on_state = is_pwm_output_on_for_motor_number(motor_number);
+
+    if(current_is_pwm_output_on_state != motors_data[motor_number].previous_is_pwm_output_on_state)
+    {
+        publish_is_pwm_output_on_for_motor_number(motor_number, current_is_pwm_output_on_state);
+        motors_data[motor_number].previous_is_pwm_output_on_state = current_is_pwm_output_on_state;
+    }
+}
+
+
+static void initialize_previous_is_pwm_output_on_state_for_motor_number(MotorNumber motor_number)
+{
+    bool current_is_pwm_output_on_state = is_pwm_output_on_for_motor_number(motor_number);
+
+    publish_is_pwm_output_on_for_motor_number(motor_number, current_is_pwm_output_on_state);
+    motors_data[motor_number].previous_is_pwm_output_on_state = current_is_pwm_output_on_state;
+}
+
+
+static void initialize_previous_is_pwm_output_on_state_for_all_motors()
+{
+    initialize_previous_is_pwm_output_on_state_for_motor_number(MOTOR0);
+    initialize_previous_is_pwm_output_on_state_for_motor_number(MOTOR1);
+    initialize_previous_is_pwm_output_on_state_for_motor_number(MOTOR2);
+    initialize_previous_is_pwm_output_on_state_for_motor_number(MOTOR3);
+    initialize_previous_is_pwm_output_on_state_for_motor_number(MOTOR4);
+    initialize_previous_is_pwm_output_on_state_for_motor_number(MOTOR5);
+    initialize_previous_is_pwm_output_on_state_for_motor_number(MOTOR6);
+    initialize_previous_is_pwm_output_on_state_for_motor_number(MOTOR7);
+}
+
+
 static void motor_pwm_esc_timer_callback(rcl_timer_t *, int64_t)
 {
-    publish_is_pwm_output_on_for_motor_number(MOTOR0);
-    publish_is_pwm_output_on_for_motor_number(MOTOR1);
-    publish_is_pwm_output_on_for_motor_number(MOTOR2);
-    publish_is_pwm_output_on_for_motor_number(MOTOR3);
-    publish_is_pwm_output_on_for_motor_number(MOTOR4);
-    publish_is_pwm_output_on_for_motor_number(MOTOR5);
-    publish_is_pwm_output_on_for_motor_number(MOTOR6);
-    publish_is_pwm_output_on_for_motor_number(MOTOR7);
+    publish_is_pwm_output_on_only_when_updated_for_motor_number(MOTOR0);
+    publish_is_pwm_output_on_only_when_updated_for_motor_number(MOTOR1);
+    publish_is_pwm_output_on_only_when_updated_for_motor_number(MOTOR2);
+    publish_is_pwm_output_on_only_when_updated_for_motor_number(MOTOR3);
+    publish_is_pwm_output_on_only_when_updated_for_motor_number(MOTOR4);
+    publish_is_pwm_output_on_only_when_updated_for_motor_number(MOTOR5);
+    publish_is_pwm_output_on_only_when_updated_for_motor_number(MOTOR6);
+    publish_is_pwm_output_on_only_when_updated_for_motor_number(MOTOR7);
 }
 
 
@@ -89,4 +127,6 @@ void initialize_motor_pwm_esc_ros(rcl_node_t *stm32_node, rclc_support_t *suppor
 {
     initialize_is_pwm_output_on_publisher_for_all_motors(stm32_node);
     initialize_motor_pwm_esc_timer(support, executor);
+
+    initialize_previous_is_pwm_output_on_state_for_all_motors();
 }

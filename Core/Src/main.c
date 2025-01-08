@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "micro_ros_configuration.h"
 #include "motor_pwm_esc_driver.h"
+#include "motor_pwm_esc_node.h"
 #include "kill_switch_node.h"
 
 #include <rclc/rclc.h>
@@ -533,6 +534,7 @@ void StartDefaultTask(void *argument)
   printf("Debug: number of DDS handles: %u\n", num_handles);
   rclc_executor_init(&executor, &support.context, num_handles, &allocator);
 
+  initialize_motor_pwm_esc_node(&support);
   initialize_kill_switch_node(&support, &executor);
 
   /* Infinite loop */

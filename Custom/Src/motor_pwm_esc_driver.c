@@ -1,14 +1,19 @@
 #include "motor_pwm_esc_driver.h"
 
+
 struct {
     TIM_HandleTypeDef *motor_htim;
     uint32_t motor_channel;
+    bool is_pwm_output_on;
+    uint32_t pwm_output_compare_value;
 } motor_profiles[8];
 
 void initialize_motor(MotorNumber motor_number, TIM_HandleTypeDef *motor_htim, uint32_t motor_channel)
 {
     motor_profiles[motor_number].motor_htim = motor_htim;
     motor_profiles[motor_number].motor_channel = motor_channel;
+    motor_profiles[motor_number].is_pwm_output_on = false;
+    motor_profiles[motor_number].pwm_output_compare_value = 0;
 }
 
 void initialize_all_motors(
@@ -49,18 +54,34 @@ void initialize_all_motors(
 
 void set_motor_pwm_output(MotorNumber motor_number, uint32_t compare_value)
 {
+    motor_profiles[motor_number].pwm_output_compare_value = compare_value;
     __HAL_TIM_SetCompare(motor_profiles[motor_number].motor_htim, motor_profiles[motor_number].motor_channel, compare_value);
 }
 
 static void start_motor_pwm_output(MotorNumber motor_number)
 {
+    motor_profiles[motor_number].is_pwm_output_on = true;
     HAL_TIM_PWM_Start(motor_profiles[motor_number].motor_htim, motor_profiles[motor_number].motor_channel);
 }
 
 static void stop_motor_pwm_output(MotorNumber motor_number)
 {
+    motor_profiles[motor_number].is_pwm_output_on = false;
     HAL_TIM_PWM_Stop(motor_profiles[motor_number].motor_htim, motor_profiles[motor_number].motor_channel);
 }
+
+
+bool is_pwm_output_on_for_motor_number(MotorNumber motor_number)
+{
+    return motor_profiles[motor_number].is_pwm_output_on;
+}
+
+
+uint32_t get_pwm_output_compare_value(MotorNumber motor_number)
+{
+    return motor_profiles[motor_number].pwm_output_compare_value;
+}
+
 
 void start_all_motors_pwm_output()
 {

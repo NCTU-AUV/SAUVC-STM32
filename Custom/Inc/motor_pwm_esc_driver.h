@@ -4,6 +4,7 @@
 #include "stm32f4xx_hal.h"
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef enum {
     MOTOR0 = 0,
@@ -46,5 +47,8 @@ void set_motor_pwm_output(MotorNumber motor_number, uint32_t compare_value);
 
 void start_all_motors_pwm_output();
 void stop_all_motors_pwm_output();
+
+bool is_pwm_output_on_for_motor_number(MotorNumber motor_number);
+uint32_t get_pwm_output_compare_value(MotorNumber motor_number);
 
 #endif

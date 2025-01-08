@@ -1,6 +1,7 @@
 #include "motor_pwm_esc_ros/motor_pwm_esc_ros.h"
 
 #include "motor_pwm_esc_ros/publish_is_pwm_output_on.h"
+#include "motor_pwm_esc_ros/subscribe_set_pwm_output_on.h"
 
 #include <std_msgs/msg/bool.h>
 
@@ -51,6 +52,8 @@ void initialize_motor_pwm_esc_ros(rcl_node_t *stm32_node, rclc_support_t *suppor
 {
     initialize_is_pwm_output_on_publisher_for_all_motors(stm32_node);
     initialize_motor_pwm_esc_timer(support, executor);
+
+    initialize_set_pwm_output_on_subscriber_for_all_motors(stm32_node);
 
     initialize_previous_is_pwm_output_on_state_for_all_motors();
 }

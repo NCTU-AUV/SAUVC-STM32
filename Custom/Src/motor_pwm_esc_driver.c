@@ -58,13 +58,13 @@ void set_motor_pwm_output(MotorNumber motor_number, uint32_t compare_value)
     __HAL_TIM_SetCompare(motor_profiles[motor_number].motor_htim, motor_profiles[motor_number].motor_channel, compare_value);
 }
 
-static void start_motor_pwm_output(MotorNumber motor_number)
+void start_motor_pwm_output(MotorNumber motor_number)
 {
     motor_profiles[motor_number].is_pwm_output_on = true;
     HAL_TIM_PWM_Start(motor_profiles[motor_number].motor_htim, motor_profiles[motor_number].motor_channel);
 }
 
-static void stop_motor_pwm_output(MotorNumber motor_number)
+void stop_motor_pwm_output(MotorNumber motor_number)
 {
     motor_profiles[motor_number].is_pwm_output_on = false;
     HAL_TIM_PWM_Stop(motor_profiles[motor_number].motor_htim, motor_profiles[motor_number].motor_channel);

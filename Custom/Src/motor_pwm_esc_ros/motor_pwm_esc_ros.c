@@ -6,7 +6,7 @@
 #include <std_msgs/msg/bool.h>
 
 
-const unsigned int MOTOR_PWM_ESC_NUM_HANDLES = 1;
+const unsigned int MOTOR_PWM_ESC_NUM_HANDLES = 1 + 8;
 
 
 static rcl_timer_t motor_pwm_esc_timer;
@@ -53,7 +53,7 @@ void initialize_motor_pwm_esc_ros(rcl_node_t *stm32_node, rclc_support_t *suppor
     initialize_is_pwm_output_on_publisher_for_all_motors(stm32_node);
     initialize_motor_pwm_esc_timer(support, executor);
 
-    initialize_set_pwm_output_on_subscriber_for_all_motors(stm32_node);
+    initialize_set_pwm_output_on_subscriber_for_all_motors(stm32_node, executor);
 
     initialize_previous_is_pwm_output_on_state_for_all_motors();
 }

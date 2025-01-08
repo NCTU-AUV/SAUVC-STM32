@@ -71,7 +71,7 @@ void stop_motor_pwm_output(MotorNumber motor_number)
 }
 
 
-bool is_pwm_output_on_for_motor_number(MotorNumber motor_number)
+bool is_pwm_output_on(MotorNumber motor_number)
 {
     return motor_profiles[motor_number].is_pwm_output_on;
 }

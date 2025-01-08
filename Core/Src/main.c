@@ -539,7 +539,7 @@ void StartDefaultTask(void *argument)
   rclc_executor_init(&executor, &support.context, num_handles, &allocator);
 
   initialize_kill_switch_ros(&stm32_node, &support, &executor);
-  initialize_motor_pwm_esc_ros(&support);
+  initialize_motor_pwm_esc_ros(&stm32_node);
 
   /* Infinite loop */
   for(;;)

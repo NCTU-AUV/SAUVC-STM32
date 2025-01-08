@@ -2,6 +2,9 @@
 
 #include "stm32f4xx_hal.h"
 
+#include <stdint.h>
+
+
 GPIO_TypeDef *const KILL_SWITCH_GPIOX = GPIOE;
 const uint16_t KILL_SWITCH_GPIO_PIN = GPIO_PIN_2;
 const GPIO_PinState KILL_SWITCH_CLOSED_STATE = GPIO_PIN_SET;

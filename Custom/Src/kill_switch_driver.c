@@ -7,7 +7,7 @@
 
 GPIO_TypeDef *const KILL_SWITCH_GPIOX = GPIOE;
 const uint16_t KILL_SWITCH_GPIO_PIN = GPIO_PIN_2;
-const GPIO_PinState KILL_SWITCH_CLOSED_STATE = GPIO_PIN_SET;
+const GPIO_PinState KILL_SWITCH_CLOSED_STATE = GPIO_PIN_RESET;
 
 bool is_kill_switch_closed()
 {

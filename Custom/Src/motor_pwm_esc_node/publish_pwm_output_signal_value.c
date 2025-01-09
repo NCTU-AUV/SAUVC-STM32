@@ -49,7 +49,7 @@ static void publish_pwm_output_signal_value(MotorNumber motor_number, int32_t pw
 
 void publish_pwm_output_signal_value_only_when_updated(MotorNumber motor_number)
 {
-    int16_t current_pwm_output_signal_value_us = get_pwm_output_compare_value(motor_number);
+    int16_t current_pwm_output_signal_value_us = get_pwm_output_signal_value_us(motor_number);
 
     if(current_pwm_output_signal_value_us != motors_data[motor_number].previous_pwm_output_signal_value_us)
     {
@@ -61,7 +61,7 @@ void publish_pwm_output_signal_value_only_when_updated(MotorNumber motor_number)
 
 static void initialize_previous_pwm_output_signal_value(MotorNumber motor_number)
 {
-    bool current_pwm_output_signal_value_us = get_pwm_output_compare_value(motor_number);
+    bool current_pwm_output_signal_value_us = get_pwm_output_signal_value_us(motor_number);
 
     publish_pwm_output_signal_value(motor_number, current_pwm_output_signal_value_us);
     motors_data[motor_number].previous_pwm_output_signal_value_us = current_pwm_output_signal_value_us;

@@ -8,7 +8,7 @@ static struct {
     TIM_HandleTypeDef *motor_htim;
     uint32_t motor_channel;
     bool is_pwm_output_on;
-    uint32_t pwm_output_compare_value;
+    uint32_t pwm_output_signal_value_us;
 } motor_profiles[8];
 
 void initialize_motor(MotorNumber motor_number, TIM_HandleTypeDef *motor_htim, uint32_t motor_channel)
@@ -56,10 +56,10 @@ void initialize_all_motors(
     initialize_motor(MOTOR7, motor_7_htim, motor_7_channel);
 }
 
-void set_motor_pwm_output(MotorNumber motor_number, uint32_t compare_value)
+void set_motor_pwm_output(MotorNumber motor_number, uint32_t output_signal_value_us)
 {
-    motor_profiles[motor_number].pwm_output_compare_value = compare_value;
-    __HAL_TIM_SetCompare(motor_profiles[motor_number].motor_htim, motor_profiles[motor_number].motor_channel, compare_value);
+    motor_profiles[motor_number].pwm_output_signal_value_us = output_signal_value_us;
+    __HAL_TIM_SetCompare(motor_profiles[motor_number].motor_htim, motor_profiles[motor_number].motor_channel, output_signal_value_us);
 }
 
 void start_motor_pwm_output(MotorNumber motor_number)
@@ -86,9 +86,9 @@ bool is_pwm_output_on(MotorNumber motor_number)
 }
 
 
-uint32_t get_pwm_output_compare_value(MotorNumber motor_number)
+uint32_t get_pwm_output_signal_value_us(MotorNumber motor_number)
 {
-    return motor_profiles[motor_number].pwm_output_compare_value;
+    return motor_profiles[motor_number].pwm_output_signal_value_us;
 }
 
 

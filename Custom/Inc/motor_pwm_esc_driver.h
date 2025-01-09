@@ -43,7 +43,7 @@ void initialize_all_motors(
     uint32_t motor_7_channel
 );
 
-void set_motor_pwm_output(MotorNumber motor_number, uint32_t compare_value);
+void set_motor_pwm_output(MotorNumber motor_number, uint32_t output_signal_value_us);
 
 void start_motor_pwm_output(MotorNumber motor_number);
 void stop_motor_pwm_output(MotorNumber motor_number);
@@ -52,6 +52,6 @@ void start_all_motors_pwm_output();
 void stop_all_motors_pwm_output();
 
 bool is_pwm_output_on(MotorNumber motor_number);
-uint32_t get_pwm_output_compare_value(MotorNumber motor_number);
+uint32_t get_pwm_output_signal_value_us(MotorNumber motor_number);
 
 #endif

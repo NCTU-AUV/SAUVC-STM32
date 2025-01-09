@@ -4,7 +4,7 @@
 #include "kill_switch_driver.h"
 
 
-struct {
+static struct {
     TIM_HandleTypeDef *motor_htim;
     uint32_t motor_channel;
     bool is_pwm_output_on;

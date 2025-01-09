@@ -183,6 +183,7 @@ C_SOURCES += Custom/Src/motor_pwm_esc_node/motor_pwm_esc_node.c
 C_SOURCES += Custom/Src/motor_pwm_esc_node/publish_is_pwm_output_on.c
 C_SOURCES += Custom/Src/motor_pwm_esc_node/subscribe_set_pwm_output_on.c
 C_SOURCES += Custom/Src/motor_pwm_esc_node/publish_pwm_output_signal_value.c
+C_SOURCES += Custom/Src/motor_pwm_esc_node/subscribe_set_pwm_output_signal_value.c
 
 #######################################
 # micro-ROS addons

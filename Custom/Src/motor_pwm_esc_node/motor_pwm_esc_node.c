@@ -3,11 +3,12 @@
 #include "motor_pwm_esc_node/publish_is_pwm_output_on.h"
 #include "motor_pwm_esc_node/subscribe_set_pwm_output_on.h"
 #include "motor_pwm_esc_node/publish_pwm_output_signal_value.h"
+#include "motor_pwm_esc_node/subscribe_set_pwm_output_signal_value.h"
 
 #include <std_msgs/msg/bool.h>
 
 
-const unsigned int MOTOR_PWM_ESC_NUM_HANDLES = 1 + 8;
+const unsigned int MOTOR_PWM_ESC_NUM_HANDLES = 1 + 8 + 8;
 
 
 static rcl_node_t motor_pwm_esc_node;
@@ -68,6 +69,7 @@ void initialize_motor_pwm_esc_node(rclc_support_t *support, rclc_executor_t *exe
     initialize_motor_pwm_esc_timer(support, executor);
 
     initialize_set_pwm_output_on_subscriber_for_all_motors(&motor_pwm_esc_node, executor);
+    initialize_set_pwm_output_signal_value_subscriber_for_all_motors(&motor_pwm_esc_node, executor);
 
     initialize_previous_is_pwm_output_on_state_for_all_motors();
     initialize_previous_pwm_output_signal_value_for_all_motors();

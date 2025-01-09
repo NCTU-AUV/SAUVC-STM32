@@ -1,5 +1,5 @@
-#ifndef MOTOR_PWM_ESC_DRIVER
-#define MOTOR_PWM_ESC_DRIVER
+#ifndef MOTOR_PWM_CONTROL_DRIVER
+#define MOTOR_PWM_CONTROL_DRIVER
 
 #include "stm32f4xx_hal.h"
 

@@ -1,7 +1,7 @@
-#include "motor_pwm_esc_ros/motor_pwm_esc_ros.h"
+#include "motor_pwm_esc_node/motor_pwm_esc_node.h"
 
-#include "motor_pwm_esc_ros/publish_is_pwm_output_on.h"
-#include "motor_pwm_esc_ros/subscribe_set_pwm_output_on.h"
+#include "motor_pwm_esc_node/publish_is_pwm_output_on.h"
+#include "motor_pwm_esc_node/subscribe_set_pwm_output_on.h"
 
 #include <std_msgs/msg/bool.h>
 
@@ -9,6 +9,7 @@
 const unsigned int MOTOR_PWM_ESC_NUM_HANDLES = 1 + 8;
 
 
+static rcl_node_t motor_pwm_esc_node;
 static rcl_timer_t motor_pwm_esc_timer;
 
 
@@ -48,12 +49,14 @@ static void initialize_motor_pwm_esc_timer(rclc_support_t *support, rclc_executo
 }
 
 
-void initialize_motor_pwm_esc_ros(rcl_node_t *stm32_node, rclc_support_t *support, rclc_executor_t *executor)
+void initialize_motor_pwm_esc_node(rclc_support_t *support, rclc_executor_t *executor)
 {
-    initialize_is_pwm_output_on_publisher_for_all_motors(stm32_node);
+    rclc_node_init_default(&motor_pwm_esc_node, "motor_pwm_esc_node", "orca_auv", support);
+
+    initialize_is_pwm_output_on_publisher_for_all_motors(&motor_pwm_esc_node);
     initialize_motor_pwm_esc_timer(support, executor);
 
-    initialize_set_pwm_output_on_subscriber_for_all_motors(stm32_node, executor);
+    initialize_set_pwm_output_on_subscriber_for_all_motors(&motor_pwm_esc_node, executor);
 
     initialize_previous_is_pwm_output_on_state_for_all_motors();
 }

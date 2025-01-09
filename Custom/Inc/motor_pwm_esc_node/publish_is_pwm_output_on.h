@@ -5,7 +5,7 @@
 
 #include <rclc/rclc.h>
 
-void initialize_is_pwm_output_on_publisher_for_all_motors(rcl_node_t *stm32_node);
+void initialize_is_pwm_output_on_publisher_for_all_motors(rcl_node_t *motor_pwm_esc_node);
 
 void initialize_previous_is_pwm_output_on_state_for_all_motors();
 

@@ -24,7 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "micro_ros_configuration.h"
 #include "motor_pwm_esc_driver.h"
-#include "motor_pwm_esc_ros/motor_pwm_esc_ros.h"
+#include "motor_pwm_esc_node/motor_pwm_esc_node.h"
 #include "kill_switch_driver.h"
 #include "kill_switch_node.h"
 
@@ -530,16 +530,13 @@ void StartDefaultTask(void *argument)
   rclc_support_t support;
   rclc_support_init(&support, 0, NULL, &allocator);
 
-  rcl_node_t stm32_node;
-  rclc_node_init_default(&stm32_node, "stm32_node", "orca_auv", &support);
-
   rclc_executor_t executor = rclc_executor_get_zero_initialized_executor();
   unsigned int num_handles = KILL_SWITCH_NUM_HANDLES + MOTOR_PWM_ESC_NUM_HANDLES;
   printf("Debug: number of DDS handles: %u\n", num_handles);
   rclc_executor_init(&executor, &support.context, num_handles, &allocator);
 
   initialize_kill_switch_node(&support, &executor);
-  initialize_motor_pwm_esc_ros(&stm32_node, &support, &executor);
+  initialize_motor_pwm_esc_node(&support, &executor);
 
   /* Infinite loop */
   for(;;)

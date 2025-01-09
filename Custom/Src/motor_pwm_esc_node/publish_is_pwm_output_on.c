@@ -1,4 +1,4 @@
-#include "motor_pwm_esc_ros/publish_is_pwm_output_on.h"
+#include "motor_pwm_esc_node/publish_is_pwm_output_on.h"
 
 
 #include <std_msgs/msg/bool.h>
@@ -10,27 +10,27 @@ static struct {
 } motors_data[8];
 
 
-static void initialize_is_pwm_output_on_publisher(MotorNumber motor_number, const char *topic_name, rcl_node_t *stm32_node)
+static void initialize_is_pwm_output_on_publisher(MotorNumber motor_number, const char *topic_name, rcl_node_t *motor_pwm_esc_node)
 {
     rclc_publisher_init_default(
         &(motors_data[motor_number].is_pwm_output_on_publishers),
-        stm32_node,
+        motor_pwm_esc_node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
         topic_name
     );
 }
 
 
-void initialize_is_pwm_output_on_publisher_for_all_motors(rcl_node_t *stm32_node)
+void initialize_is_pwm_output_on_publisher_for_all_motors(rcl_node_t *motor_pwm_esc_node)
 {
-    initialize_is_pwm_output_on_publisher(MOTOR0, "motor_0/is_pwm_output_on", stm32_node);
-    initialize_is_pwm_output_on_publisher(MOTOR1, "motor_1/is_pwm_output_on", stm32_node);
-    initialize_is_pwm_output_on_publisher(MOTOR2, "motor_2/is_pwm_output_on", stm32_node);
-    initialize_is_pwm_output_on_publisher(MOTOR3, "motor_3/is_pwm_output_on", stm32_node);
-    initialize_is_pwm_output_on_publisher(MOTOR4, "motor_4/is_pwm_output_on", stm32_node);
-    initialize_is_pwm_output_on_publisher(MOTOR5, "motor_5/is_pwm_output_on", stm32_node);
-    initialize_is_pwm_output_on_publisher(MOTOR6, "motor_6/is_pwm_output_on", stm32_node);
-    initialize_is_pwm_output_on_publisher(MOTOR7, "motor_7/is_pwm_output_on", stm32_node);
+    initialize_is_pwm_output_on_publisher(MOTOR0, "motor_0/is_pwm_output_on", motor_pwm_esc_node);
+    initialize_is_pwm_output_on_publisher(MOTOR1, "motor_1/is_pwm_output_on", motor_pwm_esc_node);
+    initialize_is_pwm_output_on_publisher(MOTOR2, "motor_2/is_pwm_output_on", motor_pwm_esc_node);
+    initialize_is_pwm_output_on_publisher(MOTOR3, "motor_3/is_pwm_output_on", motor_pwm_esc_node);
+    initialize_is_pwm_output_on_publisher(MOTOR4, "motor_4/is_pwm_output_on", motor_pwm_esc_node);
+    initialize_is_pwm_output_on_publisher(MOTOR5, "motor_5/is_pwm_output_on", motor_pwm_esc_node);
+    initialize_is_pwm_output_on_publisher(MOTOR6, "motor_6/is_pwm_output_on", motor_pwm_esc_node);
+    initialize_is_pwm_output_on_publisher(MOTOR7, "motor_7/is_pwm_output_on", motor_pwm_esc_node);
 }
 
 

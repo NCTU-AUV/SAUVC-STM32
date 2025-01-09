@@ -5,7 +5,7 @@
 
 
 static struct {
-    rcl_publisher_t is_pwm_output_on_publishers;
+    rcl_publisher_t is_pwm_output_on_publisher;
     bool previous_is_pwm_output_on_state;
 } motors_data[8];
 
@@ -13,7 +13,7 @@ static struct {
 static void initialize_is_pwm_output_on_publisher(MotorNumber motor_number, const char *topic_name, rcl_node_t *motor_pwm_esc_node)
 {
     rclc_publisher_init_default(
-        &(motors_data[motor_number].is_pwm_output_on_publishers),
+        &(motors_data[motor_number].is_pwm_output_on_publisher),
         motor_pwm_esc_node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
         topic_name
@@ -39,7 +39,7 @@ static void publish_is_pwm_output_on(MotorNumber motor_number, bool is_pwm_outpu
     std_msgs__msg__Bool is_pwm_output_on_msg;
     is_pwm_output_on_msg.data = is_pwm_output_on_state;
 
-    rcl_ret_t ret = rcl_publish(&(motors_data[motor_number].is_pwm_output_on_publishers), &is_pwm_output_on_msg, NULL);
+    rcl_ret_t ret = rcl_publish(&(motors_data[motor_number].is_pwm_output_on_publisher), &is_pwm_output_on_msg, NULL);
     if (ret != RCL_RET_OK)
     {
         printf("Error publishing (line %d)\n", __LINE__);

@@ -35,7 +35,7 @@ static void the_set_pwm_output_signal_value_subscriber_callback_with_context(con
         output_signal_value_us = -output_signal_value_us;
     }
 
-    set_motor_pwm_output(*motor_number, (uint32_t) output_signal_value_us);
+    set_motor_pwm_output(*motor_number, (uint32_t)(output_signal_value_us));
 }
 
 

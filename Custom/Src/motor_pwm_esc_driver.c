@@ -15,8 +15,9 @@ void initialize_motor(MotorNumber motor_number, TIM_HandleTypeDef *motor_htim, u
 {
     motor_profiles[motor_number].motor_htim = motor_htim;
     motor_profiles[motor_number].motor_channel = motor_channel;
-    motor_profiles[motor_number].is_pwm_output_on = false;
-    motor_profiles[motor_number].pwm_output_compare_value = 0;
+    
+    stop_motor_pwm_output(motor_number);
+    set_motor_pwm_output(motor_number, 0);
 }
 
 void initialize_all_motors(

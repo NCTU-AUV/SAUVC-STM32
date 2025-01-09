@@ -4,6 +4,6 @@
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
 
-void initialize_set_pwm_output_on_subscriber_for_all_motors(rcl_node_t *motor_pwm_esc_node, rclc_executor_t *executor);
+void initialize_set_pwm_output_on_subscriber_for_all_motors(rcl_node_t *motor_pwm_controller_node, rclc_executor_t *executor);
 
 #endif

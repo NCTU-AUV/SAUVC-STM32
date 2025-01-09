@@ -1,4 +1,4 @@
-#include "motor_pwm_esc_node/subscribe_set_pwm_output_signal_value.h"
+#include "motor_pwm_controller_node/subscribe_set_pwm_output_signal_value.h"
 
 
 #include "motor_pwm_control_driver.h"
@@ -39,12 +39,12 @@ static void the_set_pwm_output_signal_value_subscriber_callback_with_context(con
 }
 
 
-static void initialize_set_pwm_output_signal_value_subscriber(MotorNumber motor_number, const char *topic_name, rcl_node_t *motor_pwm_esc_node, rclc_executor_t *executor)
+static void initialize_set_pwm_output_signal_value_subscriber(MotorNumber motor_number, const char *topic_name, rcl_node_t *motor_pwm_controller_node, rclc_executor_t *executor)
 {
     motors_data[motor_number].set_pwm_output_signal_value_subscriber = rcl_get_zero_initialized_subscription();
     rcl_ret_t rc = rclc_subscription_init_default(
         &(motors_data[motor_number].set_pwm_output_signal_value_subscriber),
-        motor_pwm_esc_node,
+        motor_pwm_controller_node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
         topic_name
     );
@@ -70,14 +70,14 @@ static void initialize_set_pwm_output_signal_value_subscriber(MotorNumber motor_
 }
 
 
-void initialize_set_pwm_output_signal_value_subscriber_for_all_motors(rcl_node_t *motor_pwm_esc_node, rclc_executor_t *executor)
+void initialize_set_pwm_output_signal_value_subscriber_for_all_motors(rcl_node_t *motor_pwm_controller_node, rclc_executor_t *executor)
 {
-    initialize_set_pwm_output_signal_value_subscriber(MOTOR0, "motor_0/set_pwm_output_signal_value_us", motor_pwm_esc_node, executor);
-    initialize_set_pwm_output_signal_value_subscriber(MOTOR1, "motor_1/set_pwm_output_signal_value_us", motor_pwm_esc_node, executor);
-    initialize_set_pwm_output_signal_value_subscriber(MOTOR2, "motor_2/set_pwm_output_signal_value_us", motor_pwm_esc_node, executor);
-    initialize_set_pwm_output_signal_value_subscriber(MOTOR3, "motor_3/set_pwm_output_signal_value_us", motor_pwm_esc_node, executor);
-    initialize_set_pwm_output_signal_value_subscriber(MOTOR4, "motor_4/set_pwm_output_signal_value_us", motor_pwm_esc_node, executor);
-    initialize_set_pwm_output_signal_value_subscriber(MOTOR5, "motor_5/set_pwm_output_signal_value_us", motor_pwm_esc_node, executor);
-    initialize_set_pwm_output_signal_value_subscriber(MOTOR6, "motor_6/set_pwm_output_signal_value_us", motor_pwm_esc_node, executor);
-    initialize_set_pwm_output_signal_value_subscriber(MOTOR7, "motor_7/set_pwm_output_signal_value_us", motor_pwm_esc_node, executor);
+    initialize_set_pwm_output_signal_value_subscriber(MOTOR0, "motor_0/set_pwm_output_signal_value_us", motor_pwm_controller_node, executor);
+    initialize_set_pwm_output_signal_value_subscriber(MOTOR1, "motor_1/set_pwm_output_signal_value_us", motor_pwm_controller_node, executor);
+    initialize_set_pwm_output_signal_value_subscriber(MOTOR2, "motor_2/set_pwm_output_signal_value_us", motor_pwm_controller_node, executor);
+    initialize_set_pwm_output_signal_value_subscriber(MOTOR3, "motor_3/set_pwm_output_signal_value_us", motor_pwm_controller_node, executor);
+    initialize_set_pwm_output_signal_value_subscriber(MOTOR4, "motor_4/set_pwm_output_signal_value_us", motor_pwm_controller_node, executor);
+    initialize_set_pwm_output_signal_value_subscriber(MOTOR5, "motor_5/set_pwm_output_signal_value_us", motor_pwm_controller_node, executor);
+    initialize_set_pwm_output_signal_value_subscriber(MOTOR6, "motor_6/set_pwm_output_signal_value_us", motor_pwm_controller_node, executor);
+    initialize_set_pwm_output_signal_value_subscriber(MOTOR7, "motor_7/set_pwm_output_signal_value_us", motor_pwm_controller_node, executor);
 }

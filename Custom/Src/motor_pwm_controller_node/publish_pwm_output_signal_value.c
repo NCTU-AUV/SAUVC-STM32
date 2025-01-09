@@ -1,4 +1,4 @@
-#include "motor_pwm_esc_node/publish_pwm_output_signal_value.h"
+#include "motor_pwm_controller_node/publish_pwm_output_signal_value.h"
 
 
 #include <std_msgs/msg/int32.h>
@@ -10,27 +10,27 @@ static struct {
 } motors_data[8];
 
 
-static void initialize_pwm_output_signal_value_publisher(MotorNumber motor_number, const char *topic_name, rcl_node_t *motor_pwm_esc_node)
+static void initialize_pwm_output_signal_value_publisher(MotorNumber motor_number, const char *topic_name, rcl_node_t *motor_pwm_controller_node)
 {
     rclc_publisher_init_default(
         &(motors_data[motor_number].pwm_output_signal_value_publisher),
-        motor_pwm_esc_node,
+        motor_pwm_controller_node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
         topic_name
     );
 }
 
 
-void initialize_pwm_output_signal_value_publisher_for_all_motors(rcl_node_t *motor_pwm_esc_node)
+void initialize_pwm_output_signal_value_publisher_for_all_motors(rcl_node_t *motor_pwm_controller_node)
 {
-    initialize_pwm_output_signal_value_publisher(MOTOR0, "motor_0/pwm_output_signal_value_us", motor_pwm_esc_node);
-    initialize_pwm_output_signal_value_publisher(MOTOR1, "motor_1/pwm_output_signal_value_us", motor_pwm_esc_node);
-    initialize_pwm_output_signal_value_publisher(MOTOR2, "motor_2/pwm_output_signal_value_us", motor_pwm_esc_node);
-    initialize_pwm_output_signal_value_publisher(MOTOR3, "motor_3/pwm_output_signal_value_us", motor_pwm_esc_node);
-    initialize_pwm_output_signal_value_publisher(MOTOR4, "motor_4/pwm_output_signal_value_us", motor_pwm_esc_node);
-    initialize_pwm_output_signal_value_publisher(MOTOR5, "motor_5/pwm_output_signal_value_us", motor_pwm_esc_node);
-    initialize_pwm_output_signal_value_publisher(MOTOR6, "motor_6/pwm_output_signal_value_us", motor_pwm_esc_node);
-    initialize_pwm_output_signal_value_publisher(MOTOR7, "motor_7/pwm_output_signal_value_us", motor_pwm_esc_node);
+    initialize_pwm_output_signal_value_publisher(MOTOR0, "motor_0/pwm_output_signal_value_us", motor_pwm_controller_node);
+    initialize_pwm_output_signal_value_publisher(MOTOR1, "motor_1/pwm_output_signal_value_us", motor_pwm_controller_node);
+    initialize_pwm_output_signal_value_publisher(MOTOR2, "motor_2/pwm_output_signal_value_us", motor_pwm_controller_node);
+    initialize_pwm_output_signal_value_publisher(MOTOR3, "motor_3/pwm_output_signal_value_us", motor_pwm_controller_node);
+    initialize_pwm_output_signal_value_publisher(MOTOR4, "motor_4/pwm_output_signal_value_us", motor_pwm_controller_node);
+    initialize_pwm_output_signal_value_publisher(MOTOR5, "motor_5/pwm_output_signal_value_us", motor_pwm_controller_node);
+    initialize_pwm_output_signal_value_publisher(MOTOR6, "motor_6/pwm_output_signal_value_us", motor_pwm_controller_node);
+    initialize_pwm_output_signal_value_publisher(MOTOR7, "motor_7/pwm_output_signal_value_us", motor_pwm_controller_node);
 }
 
 

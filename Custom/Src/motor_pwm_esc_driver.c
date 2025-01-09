@@ -1,6 +1,9 @@
 #include "motor_pwm_esc_driver.h"
 
 
+#include "kill_switch_driver.h"
+
+
 struct {
     TIM_HandleTypeDef *motor_htim;
     uint32_t motor_channel;
@@ -60,6 +63,11 @@ void set_motor_pwm_output(MotorNumber motor_number, uint32_t compare_value)
 
 void start_motor_pwm_output(MotorNumber motor_number)
 {
+    if(is_kill_switch_closed())
+    {
+        return;
+    }
+
     motor_profiles[motor_number].is_pwm_output_on = true;
     HAL_TIM_PWM_Start(motor_profiles[motor_number].motor_htim, motor_profiles[motor_number].motor_channel);
 }

@@ -1,4 +1,4 @@
-#include "kill_switch_ros.h"
+#include "kill_switch_node.h"
 
 #include <std_msgs/msg/bool.h>
 
@@ -8,6 +8,7 @@
 const unsigned int KILL_SWITCH_NUM_HANDLES = 1;
 
 
+static rcl_node_t kill_switch_node;
 static rcl_publisher_t is_kill_switch_closed_publisher;
 static rcl_timer_t kill_switch_timer;
 
@@ -62,12 +63,14 @@ static void initialize_kill_switch_timer(rclc_support_t *support, rclc_executor_
 }
 
 
-void initialize_kill_switch_ros(rcl_node_t *stm32_node, rclc_support_t *support, rclc_executor_t *executor)
+void initialize_kill_switch_node(rclc_support_t *support, rclc_executor_t *executor)
 {
+    rclc_node_init_default(&kill_switch_node, "kill_switch_node", "orca_auv", support);
+
     // create publisher
     rclc_publisher_init_default(
         &is_kill_switch_closed_publisher,
-        stm32_node,
+        &kill_switch_node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
         "is_kill_switch_closed"
     );

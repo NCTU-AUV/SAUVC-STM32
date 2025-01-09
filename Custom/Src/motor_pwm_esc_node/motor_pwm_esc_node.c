@@ -2,6 +2,7 @@
 
 #include "motor_pwm_esc_node/publish_is_pwm_output_on.h"
 #include "motor_pwm_esc_node/subscribe_set_pwm_output_on.h"
+#include "motor_pwm_esc_node/publish_pwm_output_signal_value.h"
 
 #include <std_msgs/msg/bool.h>
 
@@ -23,6 +24,15 @@ static void motor_pwm_esc_timer_callback(rcl_timer_t *, int64_t)
     publish_is_pwm_output_on_only_when_updated(MOTOR5);
     publish_is_pwm_output_on_only_when_updated(MOTOR6);
     publish_is_pwm_output_on_only_when_updated(MOTOR7);
+
+    publish_pwm_output_signal_value_only_when_updated(MOTOR0);
+    publish_pwm_output_signal_value_only_when_updated(MOTOR1);
+    publish_pwm_output_signal_value_only_when_updated(MOTOR2);
+    publish_pwm_output_signal_value_only_when_updated(MOTOR3);
+    publish_pwm_output_signal_value_only_when_updated(MOTOR4);
+    publish_pwm_output_signal_value_only_when_updated(MOTOR5);
+    publish_pwm_output_signal_value_only_when_updated(MOTOR6);
+    publish_pwm_output_signal_value_only_when_updated(MOTOR7);
 }
 
 
@@ -54,9 +64,11 @@ void initialize_motor_pwm_esc_node(rclc_support_t *support, rclc_executor_t *exe
     rclc_node_init_default(&motor_pwm_esc_node, "motor_pwm_esc_node", "orca_auv", support);
 
     initialize_is_pwm_output_on_publisher_for_all_motors(&motor_pwm_esc_node);
+    initialize_pwm_output_signal_value_publisher_for_all_motors(&motor_pwm_esc_node);
     initialize_motor_pwm_esc_timer(support, executor);
 
     initialize_set_pwm_output_on_subscriber_for_all_motors(&motor_pwm_esc_node, executor);
 
     initialize_previous_is_pwm_output_on_state_for_all_motors();
+    initialize_previous_pwm_output_signal_value_for_all_motors();
 }

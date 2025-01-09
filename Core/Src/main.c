@@ -23,8 +23,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "micro_ros_configuration.h"
-#include "motor_pwm_control_driver.h"
-#include "motor_pwm_controller_node/motor_pwm_controller_node.h"
+#include "thruster_pwm_control_driver.h"
+#include "thruster_pwm_controller_node/thruster_pwm_controller_node.h"
 #include "kill_switch_driver.h"
 #include "kill_switch_node.h"
 
@@ -510,7 +510,7 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
 
-  initialize_all_motors(
+  initialize_all_thrusters(
     &htim2, TIM_CHANNEL_1,
     &htim2, TIM_CHANNEL_2,
     &htim2, TIM_CHANNEL_3,
@@ -531,19 +531,19 @@ void StartDefaultTask(void *argument)
   rclc_support_init(&support, 0, NULL, &allocator);
 
   rclc_executor_t executor = rclc_executor_get_zero_initialized_executor();
-  unsigned int num_handles = KILL_SWITCH_NUM_HANDLES + MOTOR_PWM_CONTROLLER_NUM_HANDLES;
+  unsigned int num_handles = KILL_SWITCH_NUM_HANDLES + THRUSTER_PWM_CONTROLLER_NUM_HANDLES;
   printf("Debug: number of DDS handles: %u\n", num_handles);
   rclc_executor_init(&executor, &support.context, num_handles, &allocator);
 
   initialize_kill_switch_node(&support, &executor);
-  initialize_motor_pwm_controller_node(&support, &executor);
+  initialize_thruster_pwm_controller_node(&support, &executor);
 
   /* Infinite loop */
   for(;;)
   {
     if(is_kill_switch_closed())
     {
-      stop_all_motors_pwm_output();
+      stop_all_thrusters_pwm_output();
     }
 
     rclc_executor_spin_some(&executor, RCL_MS_TO_NS(1000));

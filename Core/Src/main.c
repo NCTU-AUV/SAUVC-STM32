@@ -546,7 +546,7 @@ void StartDefaultTask(void *argument)
       stop_all_thrusters_pwm_output();
     }
 
-    rclc_executor_spin_some(&executor, RCL_MS_TO_NS(1000));
+    rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
     
     osDelay(1);
   }

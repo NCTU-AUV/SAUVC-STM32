@@ -27,6 +27,7 @@
 #include "thruster_pwm_controller_node/thruster_pwm_controller_node.h"
 #include "kill_switch_driver.h"
 #include "kill_switch_node.h"
+#include "MS5837.h"
 
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
@@ -576,23 +577,23 @@ void StartDefaultTask(void *argument)
 void StartPressureSensorTask(void *argument)
 {
   /* USER CODE BEGIN StartPressureSensorTask */
-  // MS5837_MS5837();
+  MS5837_MS5837();
 
-  // while (!MS5837_init(&hi2c1)) {
-  //   printf("Init failed!"); 
-  //   osDelay(5000);
-  // }
+  while (!MS5837_init(&hi2c1)) {
+    printf("Init failed!");
+    osDelay(5000);
+  }
 
-  // MS5837_setFluidDensity(997);
+  MS5837_setFluidDensity(997);
   /* Infinite loop */
   for(;;)
   {
-    //   MS5837_read();
+    MS5837_read();
 
-    //   MS5837_pressure_default();
-    //   MS5837_temperature();
-    //   MS5837_depth();
-    //   MS5837_altitude();
+    MS5837_pressure_default();
+    MS5837_temperature();
+    MS5837_depth();
+    MS5837_altitude();
     osDelay(1000);
   }
   /* USER CODE END StartPressureSensorTask */

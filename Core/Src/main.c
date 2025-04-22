@@ -64,11 +64,11 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 3000 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for barometerTask */
-osThreadId_t barometerTaskHandle;
-const osThreadAttr_t barometerTask_attributes = {
-  .name = "barometerTask",
-  .stack_size = 128 * 4,
+/* Definitions for pressureSensorT */
+osThreadId_t pressureSensorTHandle;
+const osThreadAttr_t pressureSensorT_attributes = {
+  .name = "pressureSensorT",
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* USER CODE BEGIN PV */
@@ -84,7 +84,7 @@ static void MX_TIM8_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_I2C1_Init(void);
 void StartDefaultTask(void *argument);
-void StartBarometerTask(void *argument);
+void StartPressureSensorTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -156,8 +156,8 @@ int main(void)
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  /* creation of barometerTask */
-  barometerTaskHandle = osThreadNew(StartBarometerTask, NULL, &barometerTask_attributes);
+  /* creation of pressureSensorT */
+  pressureSensorTHandle = osThreadNew(StartPressureSensorTask, NULL, &pressureSensorT_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -557,36 +557,22 @@ void StartDefaultTask(void *argument)
   /* USER CODE END 5 */
 }
 
-/* USER CODE BEGIN Header_StartBarometerTask */
+/* USER CODE BEGIN Header_StartPressureSensorTask */
 /**
-* @brief Function implementing the barometerTask thread.
+* @brief Function implementing the pressureSensorT thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartBarometerTask */
-void StartBarometerTask(void *argument)
+/* USER CODE END Header_StartPressureSensorTask */
+void StartPressureSensorTask(void *argument)
 {
-  /* USER CODE BEGIN StartBarometerTask */
-  // MS5837_MS5837();
-
-  // while (!MS5837_init(&hi2c1)) {
-  //   printf("Init failed!"); 
-  //   osDelay(5000);
-  // }
-
-  // MS5837_setFluidDensity(997);
+  /* USER CODE BEGIN StartPressureSensorTask */
   /* Infinite loop */
   for(;;)
   {
-  //   MS5837_read();
-
-  //   MS5837_pressure_default();
-  //   MS5837_temperature();
-  //   MS5837_depth();
-  //   MS5837_altitude();
-    osDelay(1000);
+    osDelay(1);
   }
-  /* USER CODE END StartBarometerTask */
+  /* USER CODE END StartPressureSensorTask */
 }
 
 /**

@@ -71,6 +71,11 @@ const osThreadAttr_t pressureSensorT_attributes = {
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
+/* Definitions for pressureSensorDepthQueue */
+osMessageQueueId_t pressureSensorDepthQueueHandle;
+const osMessageQueueAttr_t pressureSensorDepthQueue_attributes = {
+  .name = "pressureSensorDepthQueue"
+};
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -147,6 +152,10 @@ int main(void)
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of pressureSensorDepthQueue */
+  pressureSensorDepthQueueHandle = osMessageQueueNew (1, sizeof(float), &pressureSensorDepthQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -567,10 +576,24 @@ void StartDefaultTask(void *argument)
 void StartPressureSensorTask(void *argument)
 {
   /* USER CODE BEGIN StartPressureSensorTask */
+  // MS5837_MS5837();
+
+  // while (!MS5837_init(&hi2c1)) {
+  //   printf("Init failed!"); 
+  //   osDelay(5000);
+  // }
+
+  // MS5837_setFluidDensity(997);
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    //   MS5837_read();
+
+    //   MS5837_pressure_default();
+    //   MS5837_temperature();
+    //   MS5837_depth();
+    //   MS5837_altitude();
+    osDelay(1000);
   }
   /* USER CODE END StartPressureSensorTask */
 }

@@ -592,8 +592,11 @@ void StartPressureSensorTask(void *argument)
 
     MS5837_pressure_default();
     MS5837_temperature();
-    MS5837_depth();
+    float pressure_sensor_depth_reading = MS5837_depth();
     MS5837_altitude();
+
+    osMessageQueuePut(pressureSensorDepthQueueHandle, &pressure_sensor_depth_reading, 0U, 0U);
+
     osDelay(1000);
   }
   /* USER CODE END StartPressureSensorTask */

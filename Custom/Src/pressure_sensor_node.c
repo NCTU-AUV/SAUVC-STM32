@@ -29,16 +29,19 @@ static void publish_pressure_sensor_depth(float pressure_sensor_depth_m)
 
 static void pressure_sensor_timer_callback(rcl_timer_t *, int64_t)
 {
-    float pressure_sensor_depth_m = (float) 432.1;
-    publish_pressure_sensor_depth(pressure_sensor_depth_m);
+    float pressure_sensor_depth_m;
 
-    // float pressure_sensor_depth_m;
+    osStatus_t status = osMessageQueueGet(pressure_sensor_depth_queue_handle, &pressure_sensor_depth_m, NULL, 0U);
 
-    // osStatus_t status = osMessageQueueGet(pressure_sensor_depth_queue_handle, &pressure_sensor_depth_m, NULL, 0U);
-
-    // if (status == osOK) {
-    //     publish_pressure_sensor_depth(pressure_sensor_depth_m);
-    // }
+    if (status == osOK) {
+        publish_pressure_sensor_depth(pressure_sensor_depth_m);
+    } else if (status == osErrorTimeout) {
+        publish_pressure_sensor_depth(1.0);
+    } else if (status == osErrorResource) {
+        publish_pressure_sensor_depth(2.0);
+    } else if (status == osErrorParameter) {
+        publish_pressure_sensor_depth(3.0);
+    }
 }
 
 

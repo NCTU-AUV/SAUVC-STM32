@@ -564,7 +564,7 @@ void StartDefaultTask(void *argument)
 
     rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
     
-    osDelay(1);
+    osDelay(10);
   }
   /* USER CODE END 5 */
 }
@@ -599,7 +599,7 @@ void StartPressureSensorTask(void *argument)
 
     osMessageQueuePut(pressureSensorDepthQueueHandle, &pressure_sensor_depth_reading, 0U, 0U);
 
-    osDelay(1000);
+    osDelay(10);
   }
   /* USER CODE END StartPressureSensorTask */
 }

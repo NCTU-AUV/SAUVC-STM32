@@ -41,6 +41,8 @@ static void pressure_sensor_timer_callback(rcl_timer_t *, int64_t)
         publish_pressure_sensor_depth(2.0);
     } else if (status == osErrorParameter) {
         publish_pressure_sensor_depth(3.0);
+    } else {
+        publish_pressure_sensor_depth(4.0);
     }
 }
 

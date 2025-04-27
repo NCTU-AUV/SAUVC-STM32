@@ -552,7 +552,7 @@ void StartDefaultTask(void *argument)
 
   initialize_kill_switch_node(&support, &executor);
   initialize_thruster_pwm_controller_node(&support, &executor);
-  initialize_pressure_sensor_node(&support, &executor, pressureSensorTHandle);
+  initialize_pressure_sensor_node(&support, &executor, pressureSensorDepthQueueHandle);
 
   /* Infinite loop */
   for(;;)

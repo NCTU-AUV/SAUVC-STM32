@@ -564,7 +564,7 @@ void StartDefaultTask(void *argument)
 
     rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
     
-    osDelay(10);
+    osDelay(5);
   }
   /* USER CODE END 5 */
 }

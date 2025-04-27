@@ -66,10 +66,10 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 3000 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for pressureSensorT */
-osThreadId_t pressureSensorTHandle;
-const osThreadAttr_t pressureSensorT_attributes = {
-  .name = "pressureSensorT",
+/* Definitions for pressureSensorTask */
+osThreadId_t pressureSensorTaskHandle;
+const osThreadAttr_t pressureSensorTask_attributes = {
+  .name = "pressureSensorTask",
   .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
@@ -167,8 +167,8 @@ int main(void)
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  /* creation of pressureSensorT */
-  pressureSensorTHandle = osThreadNew(StartPressureSensorTask, NULL, &pressureSensorT_attributes);
+  /* creation of pressureSensorTask */
+  pressureSensorTaskHandle = osThreadNew(StartPressureSensorTask, NULL, &pressureSensorTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */

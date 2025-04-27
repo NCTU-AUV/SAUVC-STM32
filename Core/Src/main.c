@@ -27,6 +27,8 @@
 #include "thruster_pwm_controller_node/thruster_pwm_controller_node.h"
 #include "kill_switch_driver.h"
 #include "kill_switch_node.h"
+#include "MS5837.h"
+#include "pressure_sensor_node.h"
 
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
@@ -64,12 +66,17 @@ const osThreadAttr_t defaultTask_attributes = {
   .stack_size = 3000 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for barometerTask */
-osThreadId_t barometerTaskHandle;
-const osThreadAttr_t barometerTask_attributes = {
-  .name = "barometerTask",
-  .stack_size = 128 * 4,
+/* Definitions for pressureSensorTask */
+osThreadId_t pressureSensorTaskHandle;
+const osThreadAttr_t pressureSensorTask_attributes = {
+  .name = "pressureSensorTask",
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for pressureSensorDepthQueue */
+osMessageQueueId_t pressureSensorDepthQueueHandle;
+const osMessageQueueAttr_t pressureSensorDepthQueue_attributes = {
+  .name = "pressureSensorDepthQueue"
 };
 /* USER CODE BEGIN PV */
 
@@ -84,7 +91,7 @@ static void MX_TIM8_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_I2C1_Init(void);
 void StartDefaultTask(void *argument);
-void StartBarometerTask(void *argument);
+void StartPressureSensorTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -148,6 +155,10 @@ int main(void)
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
+  /* Create the queue(s) */
+  /* creation of pressureSensorDepthQueue */
+  pressureSensorDepthQueueHandle = osMessageQueueNew (1, sizeof(float), &pressureSensorDepthQueue_attributes);
+
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -156,8 +167,8 @@ int main(void)
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  /* creation of barometerTask */
-  barometerTaskHandle = osThreadNew(StartBarometerTask, NULL, &barometerTask_attributes);
+  /* creation of pressureSensorTask */
+  pressureSensorTaskHandle = osThreadNew(StartPressureSensorTask, NULL, &pressureSensorTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -535,12 +546,13 @@ void StartDefaultTask(void *argument)
   rclc_support_init(&support, 0, NULL, &allocator);
 
   rclc_executor_t executor = rclc_executor_get_zero_initialized_executor();
-  unsigned int num_handles = KILL_SWITCH_NUM_HANDLES + THRUSTER_PWM_CONTROLLER_NUM_HANDLES;
+  unsigned int num_handles = KILL_SWITCH_NUM_HANDLES + THRUSTER_PWM_CONTROLLER_NUM_HANDLES + PRESSURE_SENSOR_NUM_HANDLES;
   printf("Debug: number of DDS handles: %u\n", num_handles);
   rclc_executor_init(&executor, &support.context, num_handles, &allocator);
 
   initialize_kill_switch_node(&support, &executor);
   initialize_thruster_pwm_controller_node(&support, &executor);
+  initialize_pressure_sensor_node(&support, &executor, pressureSensorDepthQueueHandle);
 
   /* Infinite loop */
   for(;;)
@@ -557,36 +569,39 @@ void StartDefaultTask(void *argument)
   /* USER CODE END 5 */
 }
 
-/* USER CODE BEGIN Header_StartBarometerTask */
+/* USER CODE BEGIN Header_StartPressureSensorTask */
 /**
-* @brief Function implementing the barometerTask thread.
+* @brief Function implementing the pressureSensorT thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartBarometerTask */
-void StartBarometerTask(void *argument)
+/* USER CODE END Header_StartPressureSensorTask */
+void StartPressureSensorTask(void *argument)
 {
-  /* USER CODE BEGIN StartBarometerTask */
-  // MS5837_MS5837();
+  /* USER CODE BEGIN StartPressureSensorTask */
+  MS5837_MS5837();
 
-  // while (!MS5837_init(&hi2c1)) {
-  //   printf("Init failed!"); 
-  //   osDelay(5000);
-  // }
+  while (!MS5837_init(&hi2c1)) {
+    printf("Init failed!");
+    osDelay(5000);
+  }
 
-  // MS5837_setFluidDensity(997);
+  MS5837_setFluidDensity(997);
   /* Infinite loop */
   for(;;)
   {
-  //   MS5837_read();
+    MS5837_read();
 
-  //   MS5837_pressure_default();
-  //   MS5837_temperature();
-  //   MS5837_depth();
-  //   MS5837_altitude();
-    osDelay(1000);
+    MS5837_pressure_default();
+    MS5837_temperature();
+    float pressure_sensor_depth_reading = MS5837_depth();
+    MS5837_altitude();
+
+    osMessageQueuePut(pressureSensorDepthQueueHandle, &pressure_sensor_depth_reading, 0U, 0U);
+
+    osDelay(1);
   }
-  /* USER CODE END StartBarometerTask */
+  /* USER CODE END StartPressureSensorTask */
 }
 
 /**

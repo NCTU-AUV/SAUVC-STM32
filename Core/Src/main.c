@@ -579,23 +579,25 @@ void StartDefaultTask(void *argument)
 void StartPressureSensorTask(void *argument)
 {
   /* USER CODE BEGIN StartPressureSensorTask */
-  MS5837_MS5837();
+  // MS5837_MS5837();
 
-  while (!MS5837_init(&hi2c1)) {
-    printf("Init failed!");
-    osDelay(5000);
-  }
+  // while (!MS5837_init(&hi2c1)) {
+  //   printf("Init failed!");
+  //   osDelay(5000);
+  // }
 
-  MS5837_setFluidDensity(997);
+  // MS5837_setFluidDensity(997);
   /* Infinite loop */
   for(;;)
   {
-    MS5837_read();
+    // MS5837_read();
 
-    MS5837_pressure_default();
-    MS5837_temperature();
-    float pressure_sensor_depth_reading = MS5837_depth();
-    MS5837_altitude();
+    // MS5837_pressure_default();
+    // MS5837_temperature();
+    // float pressure_sensor_depth_reading = MS5837_depth();
+    // MS5837_altitude();
+
+    float pressure_sensor_depth_reading = (float) 1234.0;
 
     osMessageQueuePut(pressureSensorDepthQueueHandle, &pressure_sensor_depth_reading, 0U, 0U);
 

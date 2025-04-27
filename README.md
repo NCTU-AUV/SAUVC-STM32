@@ -29,3 +29,6 @@ make -j$(nproc)
 ## Note
 
 - The timeouts of HAL_I2C_Master_Receive and HAL_I2C_Master_Transmit in MS5837.c might jam the whole system.
+
+Using the CMSIS_V2 ARM_I2C_MasterTransmit and ARM_I2C_MasterReceive functions could be a solution.
+Reference: [https://arm-software.github.io/CMSIS_6/v6.0.0/Driver/group__i2c__interface__gr.html](https://arm-software.github.io/CMSIS_6/v6.0.0/Driver/group__i2c__interface__gr.html), [https://github.com/Open-CMSIS-Pack/CMSIS-Driver_STM32/blob/main/Drivers/I2C_STM32.c](https://github.com/Open-CMSIS-Pack/CMSIS-Driver_STM32/blob/main/Drivers/I2C_STM32.c)

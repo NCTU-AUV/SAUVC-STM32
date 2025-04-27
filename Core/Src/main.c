@@ -599,7 +599,7 @@ void StartPressureSensorTask(void *argument)
 
     osMessageQueuePut(pressureSensorDepthQueueHandle, &pressure_sensor_depth_reading, 0U, 0U);
 
-    osDelay(10);
+    osDelay(1);
   }
   /* USER CODE END StartPressureSensorTask */
 }

@@ -25,3 +25,7 @@ Compile the program.
 ```bash
 make -j$(nproc)
 ```
+
+## Note
+
+- The timeouts of HAL_I2C_Master_Receive and HAL_I2C_Master_Transmit in MS5837.c might jam the whole system.

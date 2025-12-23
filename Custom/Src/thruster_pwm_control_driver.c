@@ -74,9 +74,15 @@ void initialize_all_thrusters(
 
 void set_thruster_pwm_output(ThrusterNumber thruster_number, uint32_t output_signal_value_us)
 {
+    TIM_HandleTypeDef *htim = thruster_profiles[thruster_number].thruster_htim;
+    if (htim == NULL) {
+        // Timer not set up yet; avoid dereferencing a null handle.
+        return;
+    }
+
     uint32_t clamped_signal_us = clamp_pwm_output_signal_us(thruster_number, output_signal_value_us);
     thruster_profiles[thruster_number].pwm_output_signal_value_us = clamped_signal_us;
-    __HAL_TIM_SetCompare(thruster_profiles[thruster_number].thruster_htim, thruster_profiles[thruster_number].thruster_channel, clamped_signal_us);
+    __HAL_TIM_SetCompare(htim, thruster_profiles[thruster_number].thruster_channel, clamped_signal_us);
 }
 
 void start_thruster_pwm_output(ThrusterNumber thruster_number)

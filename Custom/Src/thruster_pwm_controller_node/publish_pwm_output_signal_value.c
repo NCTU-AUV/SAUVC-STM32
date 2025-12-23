@@ -49,7 +49,7 @@ static void publish_pwm_output_signal_value(ThrusterNumber thruster_number, int3
 
 void publish_pwm_output_signal_value_only_when_updated(ThrusterNumber thruster_number)
 {
-    int16_t current_pwm_output_signal_value_us = get_pwm_output_signal_value_us(thruster_number);
+    int32_t current_pwm_output_signal_value_us = (int32_t)get_pwm_output_signal_value_us(thruster_number);
 
     if(current_pwm_output_signal_value_us != thrusters_data[thruster_number].previous_pwm_output_signal_value_us)
     {
@@ -61,7 +61,7 @@ void publish_pwm_output_signal_value_only_when_updated(ThrusterNumber thruster_n
 
 static void initialize_previous_pwm_output_signal_value(ThrusterNumber thruster_number)
 {
-    bool current_pwm_output_signal_value_us = get_pwm_output_signal_value_us(thruster_number);
+    int32_t current_pwm_output_signal_value_us = (int32_t)get_pwm_output_signal_value_us(thruster_number);
 
     publish_pwm_output_signal_value(thruster_number, current_pwm_output_signal_value_us);
     thrusters_data[thruster_number].previous_pwm_output_signal_value_us = current_pwm_output_signal_value_us;

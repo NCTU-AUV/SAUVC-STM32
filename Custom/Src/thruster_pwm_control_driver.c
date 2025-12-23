@@ -3,6 +3,7 @@
 
 #include "kill_switch_driver.h"
 
+#include <stdio.h>
 
 static struct {
     TIM_HandleTypeDef *thruster_htim;
@@ -10,6 +11,21 @@ static struct {
     bool is_pwm_output_on;
     uint32_t pwm_output_signal_value_us;
 } thruster_profiles[8];
+
+static uint32_t clamp_pwm_output_signal_us(ThrusterNumber thruster_number, uint32_t requested_signal_us)
+{
+    TIM_HandleTypeDef *htim = thruster_profiles[thruster_number].thruster_htim;
+    if (htim == NULL) {
+        printf("Thruster %d timer not initialized; ignoring PWM request.\n", (int)thruster_number);
+        return 0;
+    }
+
+    uint32_t max_signal = htim->Init.Period;
+    if (requested_signal_us > max_signal) {
+        return max_signal;
+    }
+    return requested_signal_us;
+}
 
 void initialize_thruster(ThrusterNumber thruster_number, TIM_HandleTypeDef *thruster_htim, uint32_t thruster_channel)
 {
@@ -58,8 +74,9 @@ void initialize_all_thrusters(
 
 void set_thruster_pwm_output(ThrusterNumber thruster_number, uint32_t output_signal_value_us)
 {
-    thruster_profiles[thruster_number].pwm_output_signal_value_us = output_signal_value_us;
-    __HAL_TIM_SetCompare(thruster_profiles[thruster_number].thruster_htim, thruster_profiles[thruster_number].thruster_channel, output_signal_value_us);
+    uint32_t clamped_signal_us = clamp_pwm_output_signal_us(thruster_number, output_signal_value_us);
+    thruster_profiles[thruster_number].pwm_output_signal_value_us = clamped_signal_us;
+    __HAL_TIM_SetCompare(thruster_profiles[thruster_number].thruster_htim, thruster_profiles[thruster_number].thruster_channel, clamped_signal_us);
 }
 
 void start_thruster_pwm_output(ThrusterNumber thruster_number)

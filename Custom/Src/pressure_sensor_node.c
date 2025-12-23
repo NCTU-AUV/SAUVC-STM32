@@ -70,15 +70,23 @@ static void initialize_pressure_sensor_timer(rclc_support_t *support, rclc_execu
 
 void initialize_pressure_sensor_node(rclc_support_t *support, rclc_executor_t *executor, osMessageQueueId_t pressureSensorDepthQueueHandle)
 {
-    rclc_node_init_default(&pressure_sensor_node, "pressure_sensor_node", "orca_auv", support);
+    rcl_ret_t rc = rclc_node_init_default(&pressure_sensor_node, "pressure_sensor_node", "orca_auv", support);
+    if (rc != RCL_RET_OK) {
+        printf("pressure_sensor_node: node init failed (rc=%d)\n", (int)rc);
+        return;
+    }
 
     // create publisher
-    rclc_publisher_init_default(
+    rc = rclc_publisher_init_default(
         &pressure_sensor_depth_publisher,
         &pressure_sensor_node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32),
         "pressure_sensor_depth_m"
     );
+    if (rc != RCL_RET_OK) {
+        printf("pressure_sensor_node: publisher init failed (rc=%d)\n", (int)rc);
+        return;
+    }
 
     initialize_pressure_sensor_timer(support, executor);
 

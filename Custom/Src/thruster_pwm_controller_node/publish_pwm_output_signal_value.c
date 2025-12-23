@@ -10,27 +10,33 @@ static struct {
 } thrusters_data[8];
 
 
-static void initialize_pwm_output_signal_value_publisher(ThrusterNumber thruster_number, const char *topic_name, rcl_node_t *thruster_pwm_controller_node)
+static bool initialize_pwm_output_signal_value_publisher(ThrusterNumber thruster_number, const char *topic_name, rcl_node_t *thruster_pwm_controller_node)
 {
-    rclc_publisher_init_default(
+    rcl_ret_t rc = rclc_publisher_init_default(
         &(thrusters_data[thruster_number].pwm_output_signal_value_publisher),
         thruster_pwm_controller_node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
         topic_name
     );
+    if (rc != RCL_RET_OK) {
+        printf("pwm_output_signal_value publisher init failed for %s (rc=%d)\n", topic_name, (int)rc);
+        return false;
+    }
+    return true;
 }
 
 
-void initialize_pwm_output_signal_value_publisher_for_all_thrusters(rcl_node_t *thruster_pwm_controller_node)
+bool initialize_pwm_output_signal_value_publisher_for_all_thrusters(rcl_node_t *thruster_pwm_controller_node)
 {
-    initialize_pwm_output_signal_value_publisher(THRUSTER0, "thruster_0/pwm_output_signal_value_us", thruster_pwm_controller_node);
-    initialize_pwm_output_signal_value_publisher(THRUSTER1, "thruster_1/pwm_output_signal_value_us", thruster_pwm_controller_node);
-    initialize_pwm_output_signal_value_publisher(THRUSTER2, "thruster_2/pwm_output_signal_value_us", thruster_pwm_controller_node);
-    initialize_pwm_output_signal_value_publisher(THRUSTER3, "thruster_3/pwm_output_signal_value_us", thruster_pwm_controller_node);
-    initialize_pwm_output_signal_value_publisher(THRUSTER4, "thruster_4/pwm_output_signal_value_us", thruster_pwm_controller_node);
-    initialize_pwm_output_signal_value_publisher(THRUSTER5, "thruster_5/pwm_output_signal_value_us", thruster_pwm_controller_node);
-    initialize_pwm_output_signal_value_publisher(THRUSTER6, "thruster_6/pwm_output_signal_value_us", thruster_pwm_controller_node);
-    initialize_pwm_output_signal_value_publisher(THRUSTER7, "thruster_7/pwm_output_signal_value_us", thruster_pwm_controller_node);
+    return
+        initialize_pwm_output_signal_value_publisher(THRUSTER0, "thruster_0/pwm_output_signal_value_us", thruster_pwm_controller_node) &&
+        initialize_pwm_output_signal_value_publisher(THRUSTER1, "thruster_1/pwm_output_signal_value_us", thruster_pwm_controller_node) &&
+        initialize_pwm_output_signal_value_publisher(THRUSTER2, "thruster_2/pwm_output_signal_value_us", thruster_pwm_controller_node) &&
+        initialize_pwm_output_signal_value_publisher(THRUSTER3, "thruster_3/pwm_output_signal_value_us", thruster_pwm_controller_node) &&
+        initialize_pwm_output_signal_value_publisher(THRUSTER4, "thruster_4/pwm_output_signal_value_us", thruster_pwm_controller_node) &&
+        initialize_pwm_output_signal_value_publisher(THRUSTER5, "thruster_5/pwm_output_signal_value_us", thruster_pwm_controller_node) &&
+        initialize_pwm_output_signal_value_publisher(THRUSTER6, "thruster_6/pwm_output_signal_value_us", thruster_pwm_controller_node) &&
+        initialize_pwm_output_signal_value_publisher(THRUSTER7, "thruster_7/pwm_output_signal_value_us", thruster_pwm_controller_node);
 }
 
 

@@ -5,7 +5,7 @@
 
 #include <rclc/rclc.h>
 
-void initialize_pwm_output_signal_value_publisher_for_all_thrusters(rcl_node_t *thruster_pwm_controller_node);
+bool initialize_pwm_output_signal_value_publisher_for_all_thrusters(rcl_node_t *thruster_pwm_controller_node);
 
 void initialize_previous_pwm_output_signal_value_for_all_thrusters();
 

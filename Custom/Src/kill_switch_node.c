@@ -66,15 +66,23 @@ static void initialize_kill_switch_timer(rclc_support_t *support, rclc_executor_
 
 void initialize_kill_switch_node(rclc_support_t *support, rclc_executor_t *executor)
 {
-    rclc_node_init_default(&kill_switch_node, "kill_switch_node", "orca_auv", support);
+    rcl_ret_t rc = rclc_node_init_default(&kill_switch_node, "kill_switch_node", "orca_auv", support);
+    if (rc != RCL_RET_OK) {
+        printf("kill_switch_node: node init failed (rc=%d)\n", (int)rc);
+        return;
+    }
 
     // create publisher
-    rclc_publisher_init_default(
+    rc = rclc_publisher_init_default(
         &is_kill_switch_closed_publisher,
         &kill_switch_node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
         "is_kill_switch_closed"
     );
+    if (rc != RCL_RET_OK) {
+        printf("kill_switch_node: publisher init failed (rc=%d)\n", (int)rc);
+        return;
+    }
 
     initialize_kill_switch_timer(support, executor);
 

@@ -593,9 +593,11 @@ void StartPressureSensorTask(void *argument)
   /* USER CODE BEGIN StartPressureSensorTask */
   MS5837_MS5837();
 
+  uint32_t init_attempt = 0;
   while (!MS5837_init(&hi2c1)) {
-    printf("Init failed!");
-    osDelay(5000);
+    init_attempt++;
+    printf("MS5837 init failed (attempt %lu)\n", (unsigned long)init_attempt);
+    osDelay(init_attempt < 5 ? 1000 : 5000);
   }
 
   MS5837_setFluidDensity(997);

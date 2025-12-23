@@ -55,9 +55,10 @@ static void initialize_pressure_sensor_timer(rclc_support_t *support, rclc_execu
         printf("Created timer with timeout %d ms.\n", pressure_sensor_timer_timeout);
     }
 
-    rclc_executor_add_timer(executor, &pressure_sensor_timer);
+    rc = rclc_executor_add_timer(executor, &pressure_sensor_timer);
     if (rc != RCL_RET_OK) {
         printf("Error in rclc_executor_add_timer.\n");
+        return;
     }
 }
 

@@ -53,9 +53,10 @@ static void initialize_thruster_pwm_controller_timer(rclc_support_t *support, rc
         printf("Created timer with timeout %d ms.\n", thruster_pwm_controller_timer_timeout);
     }
 
-    rclc_executor_add_timer(executor, &thruster_pwm_controller_timer);
+    rc = rclc_executor_add_timer(executor, &thruster_pwm_controller_timer);
     if (rc != RCL_RET_OK) {
         printf("Error in rclc_executor_add_timer.\n");
+        return;
     }
 }
 

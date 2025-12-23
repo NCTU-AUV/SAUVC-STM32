@@ -56,9 +56,10 @@ static void initialize_kill_switch_timer(rclc_support_t *support, rclc_executor_
         printf("Created timer with timeout %d ms.\n", kill_switch_timer_timeout);
     }
 
-    rclc_executor_add_timer(executor, &kill_switch_timer);
+    rc = rclc_executor_add_timer(executor, &kill_switch_timer);
     if (rc != RCL_RET_OK) {
         printf("Error in rclc_executor_add_timer.\n");
+        return;
     }
 }
 

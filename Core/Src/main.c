@@ -593,23 +593,36 @@ void StartPressureSensorTask(void *argument)
   /* USER CODE BEGIN StartPressureSensorTask */
   MS5837_MS5837();
 
-  uint32_t init_attempt = 0;
-  while (!MS5837_init(&hi2c1)) {
-    init_attempt++;
-    printf("MS5837 init failed (attempt %lu)\n", (unsigned long)init_attempt);
-    osDelay(init_attempt < 5 ? 1000 : 5000);
+  const uint32_t max_init_attempts = 5;
+  while (1) {
+    uint32_t init_attempt = 0;
+    while (!MS5837_init(&hi2c1) && init_attempt < max_init_attempts) {
+      init_attempt++;
+      printf("MS5837 init failed (attempt %lu)\n", (unsigned long)init_attempt);
+      osDelay(init_attempt < 5 ? 1000 : 5000);
+    }
+    if (init_attempt < max_init_attempts) {
+      break;
+    }
+
+    printf("MS5837 failed to init after %lu attempts; retrying in 10s\n", (unsigned long)max_init_attempts);
+    osDelay(10000);
   }
 
   MS5837_setFluidDensity(997);
   /* Infinite loop */
   for(;;)
   {
-    MS5837_read();
+    if (!MS5837_read()) {
+      printf("MS5837 read failed; skipping publish\n");
+      osDelay(50);
+      continue;
+    }
 
-    MS5837_pressure_default();
-    MS5837_temperature();
+    (void)MS5837_pressure_default();
+    (void)MS5837_temperature();
     float pressure_sensor_depth_reading = MS5837_depth();
-    MS5837_altitude();
+    (void)MS5837_altitude();
 
     osStatus_t queue_status = osMessageQueuePut(pressureSensorDepthQueueHandle, &pressure_sensor_depth_reading, 0U, 0U);
     if (queue_status == osErrorResource) {

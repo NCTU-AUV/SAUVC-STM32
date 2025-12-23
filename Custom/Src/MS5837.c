@@ -130,28 +130,28 @@ void MS5837_setFluidDensity(float density) {
 	fluidDensity = density;
 }
 
-void MS5837_read() {
+bool MS5837_read() {
 	uint8_t data_buffer[3];
 
 	//Check that _i2cPort is not NULL (i.e. has the user forgoten to call .init or .begin?)
 	if (_hi2cPort == NULL)
 	{
-		return;
+		return false;
 	}
 
 	// Request D1 conversion
 	if (!i2c_write(MS5837_CONVERT_D1_8192)) {
-		return;
+		return false;
 	}
 
 	osDelay(20); // Max conversion time per datasheet
 
 	if (!i2c_write(MS5837_ADC_READ)) {
-		return;
+		return false;
 	}
 
 	if (!i2c_read(data_buffer, 3)) {
-		return;
+		return false;
 	}
 	D1_pres = 0;
 	D1_pres = data_buffer[0];
@@ -160,17 +160,17 @@ void MS5837_read() {
 
 	// Request D2 conversion
 	if (!i2c_write(MS5837_CONVERT_D2_8192)) {
-		return;
+		return false;
 	}
 
 	osDelay(20); // Max conversion time per datasheet
 
 	if (!i2c_write(MS5837_ADC_READ)) {
-		return;
+		return false;
 	}
 
 	if (!i2c_read(data_buffer, 3)) {
-		return;
+		return false;
 	}
 	D2_temp = 0;
 	D2_temp = data_buffer[0];
@@ -178,6 +178,7 @@ void MS5837_read() {
 	D2_temp = (D2_temp << 8) | data_buffer[2];
 
 	MS5837_calculate();
+	return true;
 }
 
 void MS5837_calculate() {

@@ -68,7 +68,7 @@ void MS5837_setFluidDensity(float density);
 
 /** The read from I2C takes up to 40 ms, so use sparingly is possible.
  */
-void MS5837_read();
+bool MS5837_read();
 
 /** Pressure returned in mbar or mbar*conversion rate.
  */

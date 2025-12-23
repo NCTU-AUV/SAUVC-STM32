@@ -157,7 +157,7 @@ int main(void)
 
   /* Create the queue(s) */
   /* creation of pressureSensorDepthQueue */
-  pressureSensorDepthQueueHandle = osMessageQueueNew (1, sizeof(float), &pressureSensorDepthQueue_attributes);
+  pressureSensorDepthQueueHandle = osMessageQueueNew (10, sizeof(float), &pressureSensorDepthQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -597,9 +597,18 @@ void StartPressureSensorTask(void *argument)
     float pressure_sensor_depth_reading = MS5837_depth();
     MS5837_altitude();
 
-    osMessageQueuePut(pressureSensorDepthQueueHandle, &pressure_sensor_depth_reading, 0U, 0U);
+    osStatus_t queue_status = osMessageQueuePut(pressureSensorDepthQueueHandle, &pressure_sensor_depth_reading, 0U, 0U);
+    if (queue_status == osErrorResource) {
+      // Queue full: drop oldest and enqueue latest to avoid stale data.
+      float dropped_depth = 0.0f;
+      osMessageQueueGet(pressureSensorDepthQueueHandle, &dropped_depth, NULL, 0U);
+      queue_status = osMessageQueuePut(pressureSensorDepthQueueHandle, &pressure_sensor_depth_reading, 0U, 0U);
+    }
+    if (queue_status != osOK) {
+      printf("pressureSensorDepthQueue put failed: %ld\n", (long)queue_status);
+    }
 
-    osDelay(1);
+    osDelay(10);
   }
   /* USER CODE END StartPressureSensorTask */
 }

@@ -29,12 +29,17 @@ static void publish_pressure_sensor_depth(float pressure_sensor_depth_m)
 
 static void pressure_sensor_timer_callback(rcl_timer_t *, int64_t)
 {
-    float pressure_sensor_depth_m = 0.0;
+    float pressure_sensor_depth_m = 0.0f;
+    float latest_pressure_sensor_depth_m = 0.0f;
+    bool has_sample = false;
 
-    osStatus_t status = osMessageQueueGet(pressure_sensor_depth_queue_handle, &pressure_sensor_depth_m, NULL, 0U);
+    while (osMessageQueueGet(pressure_sensor_depth_queue_handle, &pressure_sensor_depth_m, NULL, 0U) == osOK) {
+        latest_pressure_sensor_depth_m = pressure_sensor_depth_m;
+        has_sample = true;
+    }
 
-    if (status == osOK) {
-        publish_pressure_sensor_depth(pressure_sensor_depth_m);
+    if (has_sample) {
+        publish_pressure_sensor_depth(latest_pressure_sensor_depth_m);
     }
 }
 

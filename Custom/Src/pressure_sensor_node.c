@@ -60,7 +60,10 @@ void initialize_pressure_sensor_node(rclc_support_t *support, rclc_executor_t *e
         "pressure_sensor_depth_m"
     );
     if (rc != RCL_RET_OK) {
-        printf("pressure_sensor_node: publisher init failed (rc=%d)\n", (int)rc);
+        printf("pressure_sensor_node: publisher init failed (rc=%d): %s\n",
+               (int)rc,
+               rcl_get_error_string().str);
+        rcl_reset_error();
         return;
     }
 

@@ -29,6 +29,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/times.h>
+#include "debug_logger.h"
 
 
 /* Variables */
@@ -82,10 +83,15 @@ __attribute__((weak)) int _write(int file, char *ptr, int len)
   (void)file;
   int DataIdx;
 
+  debug_logger_on_write(ptr, (size_t)len);
+
   for (DataIdx = 0; DataIdx < len; DataIdx++)
   {
     __io_putchar(*ptr++);
   }
+
+  debug_logger_flush();
+
   return len;
 }
 

@@ -29,9 +29,11 @@
 #include "kill_switch_node.h"
 #include "MS5837.h"
 #include "pressure_sensor_node.h"
+#include "debug_logger.h"
 
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
+#include <std_msgs/msg/string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -567,6 +569,18 @@ void StartDefaultTask(void *argument)
     while (1) {
       osDelay(1000);
     }
+  }
+
+  rcl_publisher_t debug_log_publisher = rcl_get_zero_initialized_publisher();
+  rc = rclc_publisher_init_default(
+      &debug_log_publisher,
+      &stm32_node,
+      ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, String),
+      "stm32_debug_log");
+  if (rc != RCL_RET_OK) {
+    printf("debug_log publisher init failed: %d\n", (int)rc);
+  } else {
+    debug_logger_set_publisher(&debug_log_publisher);
   }
 
   rclc_executor_t executor = rclc_executor_get_zero_initialized_executor();

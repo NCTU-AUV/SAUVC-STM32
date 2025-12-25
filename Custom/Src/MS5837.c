@@ -4,6 +4,7 @@
 
 #include <math.h>
 
+#define MS5837_I2C_TIMEOUT_MS 50
 static const uint8_t MS5837_ADDR = 0x76;
 static const uint8_t MS5837_RESET = 0x1E;
 static const uint8_t MS5837_ADC_READ = 0x00;
@@ -49,26 +50,37 @@ bool MS5837_begin(I2C_HandleTypeDef * hi2cPort) {
 	return (MS5837_init(hi2cPort));
 }
 
-static void i2c_write(uint8_t value)
+static bool i2c_write(uint8_t value)
 {
-	HAL_I2C_Master_Transmit(_hi2cPort, MS5837_ADDR << 1, &value, sizeof(value), 1000);
+	return HAL_I2C_Master_Transmit(_hi2cPort, MS5837_ADDR << 1, &value, sizeof(value), MS5837_I2C_TIMEOUT_MS) == HAL_OK;
+}
+
+static bool i2c_read(uint8_t *buffer, uint16_t len)
+{
+	return HAL_I2C_Master_Receive(_hi2cPort, MS5837_ADDR << 1, buffer, len, MS5837_I2C_TIMEOUT_MS) == HAL_OK;
 }
 
 bool MS5837_init(I2C_HandleTypeDef * hi2cPort) {
 	_hi2cPort = hi2cPort; //Grab which port the user wants us to use
 
 	// Reset the MS5837, per datasheet
-	i2c_write(MS5837_RESET);
+	if (!i2c_write(MS5837_RESET)) {
+		return false;
+	}
 
 	// Wait for reset to complete
 	osDelay(10);
 
 	// Read calibration values and CRC
 	for ( uint8_t i = 0 ; i < 7 ; i++ ) {
-		i2c_write(MS5837_PROM_READ+i*2);
+		if (!i2c_write(MS5837_PROM_READ+i*2)) {
+			return false;
+		}
 
 		uint8_t data_buffer[2];
-		HAL_I2C_Master_Receive(_hi2cPort, MS5837_ADDR << 1, data_buffer, 2, 1000);
+		if (!i2c_read(data_buffer, 2)) {
+			return false;
+		}
 		C[i] = (data_buffer[0] << 8) | data_buffer[1];
 	}
 
@@ -118,42 +130,55 @@ void MS5837_setFluidDensity(float density) {
 	fluidDensity = density;
 }
 
-void MS5837_read() {
+bool MS5837_read() {
 	uint8_t data_buffer[3];
 
 	//Check that _i2cPort is not NULL (i.e. has the user forgoten to call .init or .begin?)
 	if (_hi2cPort == NULL)
 	{
-		return;
+		return false;
 	}
 
 	// Request D1 conversion
-	i2c_write(MS5837_CONVERT_D1_8192);
+	if (!i2c_write(MS5837_CONVERT_D1_8192)) {
+		return false;
+	}
 
 	osDelay(20); // Max conversion time per datasheet
 
-	i2c_write(MS5837_ADC_READ);
+	if (!i2c_write(MS5837_ADC_READ)) {
+		return false;
+	}
 
-	HAL_I2C_Master_Receive(_hi2cPort, MS5837_ADDR << 1, data_buffer, 3, 1000);
+	if (!i2c_read(data_buffer, 3)) {
+		return false;
+	}
 	D1_pres = 0;
 	D1_pres = data_buffer[0];
 	D1_pres = (D1_pres << 8) | data_buffer[1];
 	D1_pres = (D1_pres << 8) | data_buffer[2];
 
 	// Request D2 conversion
-	i2c_write(MS5837_CONVERT_D2_8192);
+	if (!i2c_write(MS5837_CONVERT_D2_8192)) {
+		return false;
+	}
 
 	osDelay(20); // Max conversion time per datasheet
 
-	i2c_write(MS5837_ADC_READ);
+	if (!i2c_write(MS5837_ADC_READ)) {
+		return false;
+	}
 
-	HAL_I2C_Master_Receive(_hi2cPort, MS5837_ADDR << 1, data_buffer, 3, 1000);
+	if (!i2c_read(data_buffer, 3)) {
+		return false;
+	}
 	D2_temp = 0;
 	D2_temp = data_buffer[0];
 	D2_temp = (D2_temp << 8) | data_buffer[1];
 	D2_temp = (D2_temp << 8) | data_buffer[2];
 
 	MS5837_calculate();
+	return true;
 }
 
 void MS5837_calculate() {

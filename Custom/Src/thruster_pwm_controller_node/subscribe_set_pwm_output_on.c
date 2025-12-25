@@ -38,7 +38,7 @@ static void the_set_pwm_output_on_subscriber_callback_with_context(const void * 
 }
 
 
-static void initialize_set_pwm_output_on_subscriber(ThrusterNumber thruster_number, const char *topic_name, rcl_node_t *thruster_pwm_controller_node, rclc_executor_t *executor)
+static bool initialize_set_pwm_output_on_subscriber(ThrusterNumber thruster_number, const char *topic_name, rcl_node_t *thruster_pwm_controller_node, rclc_executor_t *executor)
 {
     thrusters_data[thruster_number].set_pwm_output_on_subscriber = rcl_get_zero_initialized_subscription();
     rcl_ret_t rc = rclc_subscription_init_default(
@@ -49,8 +49,7 @@ static void initialize_set_pwm_output_on_subscriber(ThrusterNumber thruster_numb
     );
     if (rc != RCL_RET_OK) {
         printf("Failed to create subscriber %s.\n", topic_name);
-    } else {
-        printf("Created subscriber %s:\n", topic_name);
+        return false;
     }
 
     std_msgs__msg__Bool__init(&(thrusters_data[thruster_number].set_pwm_output_on_msg));
@@ -65,18 +64,22 @@ static void initialize_set_pwm_output_on_subscriber(ThrusterNumber thruster_numb
     );
     if (rc != RCL_RET_OK) {
         printf("Error in rclc_executor_add_subscription. \n");
+        return false;
     }
+
+    return true;
 }
 
 
-void initialize_set_pwm_output_on_subscriber_for_all_thrusters(rcl_node_t *thruster_pwm_controller_node, rclc_executor_t *executor)
+bool initialize_set_pwm_output_on_subscriber_for_all_thrusters(rcl_node_t *thruster_pwm_controller_node, rclc_executor_t *executor)
 {
-    initialize_set_pwm_output_on_subscriber(THRUSTER0, "thruster_0/set_pwm_output_on", thruster_pwm_controller_node, executor);
-    initialize_set_pwm_output_on_subscriber(THRUSTER1, "thruster_1/set_pwm_output_on", thruster_pwm_controller_node, executor);
-    initialize_set_pwm_output_on_subscriber(THRUSTER2, "thruster_2/set_pwm_output_on", thruster_pwm_controller_node, executor);
-    initialize_set_pwm_output_on_subscriber(THRUSTER3, "thruster_3/set_pwm_output_on", thruster_pwm_controller_node, executor);
-    initialize_set_pwm_output_on_subscriber(THRUSTER4, "thruster_4/set_pwm_output_on", thruster_pwm_controller_node, executor);
-    initialize_set_pwm_output_on_subscriber(THRUSTER5, "thruster_5/set_pwm_output_on", thruster_pwm_controller_node, executor);
-    initialize_set_pwm_output_on_subscriber(THRUSTER6, "thruster_6/set_pwm_output_on", thruster_pwm_controller_node, executor);
-    initialize_set_pwm_output_on_subscriber(THRUSTER7, "thruster_7/set_pwm_output_on", thruster_pwm_controller_node, executor);
+    return
+        initialize_set_pwm_output_on_subscriber(THRUSTER0, "thruster_0/set_pwm_output_on", thruster_pwm_controller_node, executor) &&
+        initialize_set_pwm_output_on_subscriber(THRUSTER1, "thruster_1/set_pwm_output_on", thruster_pwm_controller_node, executor) &&
+        initialize_set_pwm_output_on_subscriber(THRUSTER2, "thruster_2/set_pwm_output_on", thruster_pwm_controller_node, executor) &&
+        initialize_set_pwm_output_on_subscriber(THRUSTER3, "thruster_3/set_pwm_output_on", thruster_pwm_controller_node, executor) &&
+        initialize_set_pwm_output_on_subscriber(THRUSTER4, "thruster_4/set_pwm_output_on", thruster_pwm_controller_node, executor) &&
+        initialize_set_pwm_output_on_subscriber(THRUSTER5, "thruster_5/set_pwm_output_on", thruster_pwm_controller_node, executor) &&
+        initialize_set_pwm_output_on_subscriber(THRUSTER6, "thruster_6/set_pwm_output_on", thruster_pwm_controller_node, executor) &&
+        initialize_set_pwm_output_on_subscriber(THRUSTER7, "thruster_7/set_pwm_output_on", thruster_pwm_controller_node, executor);
 }

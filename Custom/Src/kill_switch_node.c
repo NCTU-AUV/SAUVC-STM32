@@ -5,12 +5,10 @@
 #include "kill_switch_driver.h"
 
 
-const unsigned int KILL_SWITCH_NUM_HANDLES = 1;
+const unsigned int KILL_SWITCH_NUM_HANDLES = 0;
 
 
-static rcl_node_t kill_switch_node;
 static rcl_publisher_t is_kill_switch_closed_publisher;
-static rcl_timer_t kill_switch_timer;
 
 static bool previous_kill_switch_state;
 
@@ -39,43 +37,27 @@ static void kill_switch_timer_callback(rcl_timer_t *, int64_t)
     }
 }
 
-
-static void initialize_kill_switch_timer(rclc_support_t *support, rclc_executor_t *executor)
+void kill_switch_on_timer_tick(void)
 {
-    kill_switch_timer = rcl_get_zero_initialized_timer();
-    const unsigned int kill_switch_timer_timeout = 100;
-    rcl_ret_t rc = rclc_timer_init_default(
-        &kill_switch_timer,
-        support,
-        RCL_MS_TO_NS(kill_switch_timer_timeout),
-        kill_switch_timer_callback
-    );
-    if (rc != RCL_RET_OK) {
-        printf("Error in rcl_timer_init_default.\n");
-    } else {
-        printf("Created timer with timeout %d ms.\n", kill_switch_timer_timeout);
-    }
-
-    rclc_executor_add_timer(executor, &kill_switch_timer);
-    if (rc != RCL_RET_OK) {
-        printf("Error in rclc_executor_add_timer.\n");
-    }
+    kill_switch_timer_callback(NULL, 0);
 }
 
 
-void initialize_kill_switch_node(rclc_support_t *support, rclc_executor_t *executor)
+void initialize_kill_switch_node(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *stm32_node)
 {
-    rclc_node_init_default(&kill_switch_node, "kill_switch_node", "orca_auv", support);
+    (void)executor;
 
     // create publisher
-    rclc_publisher_init_default(
+    rcl_ret_t rc = rclc_publisher_init_default(
         &is_kill_switch_closed_publisher,
-        &kill_switch_node,
+        stm32_node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
         "is_kill_switch_closed"
     );
-
-    initialize_kill_switch_timer(support, executor);
+    if (rc != RCL_RET_OK) {
+        printf("kill_switch_node: publisher init failed (rc=%d)\n", (int)rc);
+        return;
+    }
 
     previous_kill_switch_state = is_kill_switch_closed();
     publish_kill_switch_state(previous_kill_switch_state);

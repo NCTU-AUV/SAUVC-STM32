@@ -94,6 +94,7 @@ void StartDefaultTask(void *argument);
 void StartPressureSensorTask(void *argument);
 
 /* USER CODE BEGIN PFP */
+static void stm32_timer_callback(rcl_timer_t *timer, int64_t last_call_time);
 
 /* USER CODE END PFP */
 
@@ -512,6 +513,14 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+static void stm32_timer_callback(rcl_timer_t *timer, int64_t last_call_time)
+{
+  (void)timer;
+  (void)last_call_time;
+  kill_switch_on_timer_tick();
+  thruster_pwm_controller_on_timer_tick();
+  pressure_sensor_on_timer_tick();
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -561,7 +570,8 @@ void StartDefaultTask(void *argument)
   }
 
   rclc_executor_t executor = rclc_executor_get_zero_initialized_executor();
-  unsigned int num_handles = KILL_SWITCH_NUM_HANDLES + THRUSTER_PWM_CONTROLLER_NUM_HANDLES + PRESSURE_SENSOR_NUM_HANDLES;
+  const unsigned int stm32_shared_timer_handles = 1;
+  unsigned int num_handles = stm32_shared_timer_handles + KILL_SWITCH_NUM_HANDLES + THRUSTER_PWM_CONTROLLER_NUM_HANDLES + PRESSURE_SENSOR_NUM_HANDLES;
   printf("Debug: number of DDS handles: %u\n", num_handles);
   rc = rclc_executor_init(&executor, &support.context, num_handles, &allocator);
   if (rc != RCL_RET_OK) {
@@ -574,6 +584,28 @@ void StartDefaultTask(void *argument)
   initialize_kill_switch_node(&support, &executor, &stm32_node);
   initialize_thruster_pwm_controller_node(&support, &executor, &stm32_node);
   initialize_pressure_sensor_node(&support, &executor, &stm32_node, pressureSensorDepthQueueHandle);
+
+  rcl_timer_t stm32_timer = rcl_get_zero_initialized_timer();
+  const unsigned int stm32_timer_timeout_ms = 100;
+  rc = rclc_timer_init_default(
+      &stm32_timer,
+      &support,
+      RCL_MS_TO_NS(stm32_timer_timeout_ms),
+      stm32_timer_callback);
+  if (rc != RCL_RET_OK) {
+    printf("stm32_timer init failed: %d\n", (int)rc);
+    while (1) {
+      osDelay(1000);
+    }
+  }
+
+  rc = rclc_executor_add_timer(&executor, &stm32_timer);
+  if (rc != RCL_RET_OK) {
+    printf("stm32_timer add failed: %d\n", (int)rc);
+    while (1) {
+      osDelay(1000);
+    }
+  }
 
   /* Infinite loop */
   for(;;)

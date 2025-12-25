@@ -5,11 +5,10 @@
 #include "kill_switch_driver.h"
 
 
-const unsigned int KILL_SWITCH_NUM_HANDLES = 1;
+const unsigned int KILL_SWITCH_NUM_HANDLES = 0;
 
 
 static rcl_publisher_t is_kill_switch_closed_publisher;
-static rcl_timer_t kill_switch_timer;
 
 static bool previous_kill_switch_state;
 
@@ -38,33 +37,16 @@ static void kill_switch_timer_callback(rcl_timer_t *, int64_t)
     }
 }
 
-
-static void initialize_kill_switch_timer(rclc_support_t *support, rclc_executor_t *executor)
+void kill_switch_on_timer_tick(void)
 {
-    kill_switch_timer = rcl_get_zero_initialized_timer();
-    const unsigned int kill_switch_timer_timeout = 100;
-    rcl_ret_t rc = rclc_timer_init_default(
-        &kill_switch_timer,
-        support,
-        RCL_MS_TO_NS(kill_switch_timer_timeout),
-        kill_switch_timer_callback
-    );
-    if (rc != RCL_RET_OK) {
-        printf("Error in rcl_timer_init_default.\n");
-    } else {
-        printf("Created timer with timeout %d ms.\n", kill_switch_timer_timeout);
-    }
-
-    rc = rclc_executor_add_timer(executor, &kill_switch_timer);
-    if (rc != RCL_RET_OK) {
-        printf("Error in rclc_executor_add_timer.\n");
-        return;
-    }
+    kill_switch_timer_callback(NULL, 0);
 }
 
 
 void initialize_kill_switch_node(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *stm32_node)
 {
+    (void)executor;
+
     // create publisher
     rcl_ret_t rc = rclc_publisher_init_default(
         &is_kill_switch_closed_publisher,
@@ -76,8 +58,6 @@ void initialize_kill_switch_node(rclc_support_t *support, rclc_executor_t *execu
         printf("kill_switch_node: publisher init failed (rc=%d)\n", (int)rc);
         return;
     }
-
-    initialize_kill_switch_timer(support, executor);
 
     previous_kill_switch_state = is_kill_switch_closed();
     publish_kill_switch_state(previous_kill_switch_state);

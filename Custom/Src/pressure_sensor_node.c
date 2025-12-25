@@ -4,11 +4,10 @@
 #include <std_msgs/msg/float32.h>
 
 
-const unsigned int PRESSURE_SENSOR_NUM_HANDLES = 1;
+const unsigned int PRESSURE_SENSOR_NUM_HANDLES = 0;
 
 
 static rcl_publisher_t pressure_sensor_depth_publisher;
-static rcl_timer_t pressure_sensor_timer;
 
 static osMessageQueueId_t pressure_sensor_depth_queue_handle;
 
@@ -43,32 +42,16 @@ static void pressure_sensor_timer_callback(rcl_timer_t *, int64_t)
 }
 
 
-static void initialize_pressure_sensor_timer(rclc_support_t *support, rclc_executor_t *executor)
+void pressure_sensor_on_timer_tick(void)
 {
-    pressure_sensor_timer = rcl_get_zero_initialized_timer();
-    const unsigned int pressure_sensor_timer_timeout = 100;
-    rcl_ret_t rc = rclc_timer_init_default(
-        &pressure_sensor_timer,
-        support,
-        RCL_MS_TO_NS(pressure_sensor_timer_timeout),
-        pressure_sensor_timer_callback
-    );
-    if (rc != RCL_RET_OK) {
-        printf("Error in rcl_timer_init_default.\n");
-    } else {
-        printf("Created timer with timeout %d ms.\n", pressure_sensor_timer_timeout);
-    }
-
-    rc = rclc_executor_add_timer(executor, &pressure_sensor_timer);
-    if (rc != RCL_RET_OK) {
-        printf("Error in rclc_executor_add_timer.\n");
-        return;
-    }
+    pressure_sensor_timer_callback(NULL, 0);
 }
 
 
 void initialize_pressure_sensor_node(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *stm32_node, osMessageQueueId_t pressureSensorDepthQueueHandle)
 {
+    (void)executor;
+
     // create publisher
     rcl_ret_t rc = rclc_publisher_init_default(
         &pressure_sensor_depth_publisher,
@@ -80,8 +63,6 @@ void initialize_pressure_sensor_node(rclc_support_t *support, rclc_executor_t *e
         printf("pressure_sensor_node: publisher init failed (rc=%d)\n", (int)rc);
         return;
     }
-
-    initialize_pressure_sensor_timer(support, executor);
 
     pressure_sensor_depth_queue_handle = pressureSensorDepthQueueHandle;
 }

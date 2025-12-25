@@ -32,6 +32,13 @@ static void kill_switch_timer_callback(rcl_timer_t *, int64_t)
 {
     bool current_kill_switch_state = is_kill_switch_closed();
 
+    const bool publish_anyways = true;
+    if(publish_anyways)
+    {
+        publish_kill_switch_state(current_kill_switch_state);
+        return;
+    }
+
     if(current_kill_switch_state != previous_kill_switch_state)
     {
         publish_kill_switch_state(current_kill_switch_state);

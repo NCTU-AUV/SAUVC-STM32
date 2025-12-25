@@ -7,7 +7,6 @@
 const unsigned int PRESSURE_SENSOR_NUM_HANDLES = 1;
 
 
-static rcl_node_t pressure_sensor_node;
 static rcl_publisher_t pressure_sensor_depth_publisher;
 static rcl_timer_t pressure_sensor_timer;
 
@@ -68,18 +67,12 @@ static void initialize_pressure_sensor_timer(rclc_support_t *support, rclc_execu
 }
 
 
-void initialize_pressure_sensor_node(rclc_support_t *support, rclc_executor_t *executor, osMessageQueueId_t pressureSensorDepthQueueHandle)
+void initialize_pressure_sensor_node(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *stm32_node, osMessageQueueId_t pressureSensorDepthQueueHandle)
 {
-    rcl_ret_t rc = rclc_node_init_default(&pressure_sensor_node, "pressure_sensor_node", "orca_auv", support);
-    if (rc != RCL_RET_OK) {
-        printf("pressure_sensor_node: node init failed (rc=%d)\n", (int)rc);
-        return;
-    }
-
     // create publisher
-    rc = rclc_publisher_init_default(
+    rcl_ret_t rc = rclc_publisher_init_default(
         &pressure_sensor_depth_publisher,
-        &pressure_sensor_node,
+        stm32_node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32),
         "pressure_sensor_depth_m"
     );

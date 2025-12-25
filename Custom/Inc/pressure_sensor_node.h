@@ -8,6 +8,6 @@
 
 extern const unsigned int PRESSURE_SENSOR_NUM_HANDLES;
 
-void initialize_pressure_sensor_node(rclc_support_t *support, rclc_executor_t *executor, osMessageQueueId_t pressureSensorDepthQueueHandle);
+void initialize_pressure_sensor_node(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *stm32_node, osMessageQueueId_t pressureSensorDepthQueueHandle);
 
 #endif

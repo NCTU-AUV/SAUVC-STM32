@@ -551,6 +551,15 @@ void StartDefaultTask(void *argument)
     }
   }
 
+  rcl_node_t stm32_node = rcl_get_zero_initialized_node();
+  rc = rclc_node_init_default(&stm32_node, "stm32_node", "orca_auv", &support);
+  if (rc != RCL_RET_OK) {
+    printf("stm32_node init failed: %d\n", (int)rc);
+    while (1) {
+      osDelay(1000);
+    }
+  }
+
   rclc_executor_t executor = rclc_executor_get_zero_initialized_executor();
   unsigned int num_handles = KILL_SWITCH_NUM_HANDLES + THRUSTER_PWM_CONTROLLER_NUM_HANDLES + PRESSURE_SENSOR_NUM_HANDLES;
   printf("Debug: number of DDS handles: %u\n", num_handles);
@@ -562,9 +571,9 @@ void StartDefaultTask(void *argument)
     }
   }
 
-  initialize_kill_switch_node(&support, &executor);
-  initialize_thruster_pwm_controller_node(&support, &executor);
-  initialize_pressure_sensor_node(&support, &executor, pressureSensorDepthQueueHandle);
+  initialize_kill_switch_node(&support, &executor, &stm32_node);
+  initialize_thruster_pwm_controller_node(&support, &executor, &stm32_node);
+  initialize_pressure_sensor_node(&support, &executor, &stm32_node, pressureSensorDepthQueueHandle);
 
   /* Infinite loop */
   for(;;)

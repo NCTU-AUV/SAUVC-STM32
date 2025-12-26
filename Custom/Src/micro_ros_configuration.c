@@ -5,6 +5,7 @@
 
 #include <rmw_microros/rmw_microros.h>
 #include <rcl/allocator.h>
+#include <rcutils/error_handling.h>
 
 bool cubemx_transport_open(struct uxrCustomTransport * transport);
 bool cubemx_transport_close(struct uxrCustomTransport * transport);
@@ -36,7 +37,9 @@ static void configure_allocator()
     freeRTOS_allocator.zero_allocate =  microros_zero_allocate;
 
     if (!rcutils_set_default_allocator(&freeRTOS_allocator)) {
-        printf("Error on default allocators (line %d)\n", __LINE__); 
+        printf("micro_ros_configuration: failed to set default FreeRTOS allocator: %s\n",
+               rcutils_get_error_string().str);
+        rcutils_reset_error();
     }
 }
 

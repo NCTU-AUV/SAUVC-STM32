@@ -2,6 +2,7 @@
 
 
 #include <std_msgs/msg/int32.h>
+#include <rcl/error_handling.h>
 
 
 static struct {
@@ -19,7 +20,12 @@ static bool initialize_pwm_output_signal_value_publisher(ThrusterNumber thruster
         topic_name
     );
     if (rc != RCL_RET_OK) {
-        printf("pwm_output_signal_value publisher init failed for %s (rc=%d)\n", topic_name, (int)rc);
+        printf("thruster %d: pwm_output_signal_value publisher init failed for %s (rc=%d): %s\n",
+               (int)thruster_number,
+               topic_name,
+               (int)rc,
+               rcl_get_error_string().str);
+        rcl_reset_error();
         return false;
     }
     return true;
@@ -48,7 +54,11 @@ static void publish_pwm_output_signal_value(ThrusterNumber thruster_number, int3
     rcl_ret_t ret = rcl_publish(&(thrusters_data[thruster_number].pwm_output_signal_value_publisher), &pwm_output_signal_value_msg, NULL);
     if (ret != RCL_RET_OK)
     {
-        printf("Error publishing (line %d)\n", __LINE__);
+        printf("thruster %d: failed to publish pwm_output_signal_value_us (rc=%d): %s\n",
+               (int)thruster_number,
+               (int)ret,
+               rcl_get_error_string().str);
+        rcl_reset_error();
     }
 }
 

@@ -3,6 +3,7 @@
 #include <std_msgs/msg/bool.h>
 
 #include "kill_switch_driver.h"
+#include <rcl/error_handling.h>
 
 
 const unsigned int KILL_SWITCH_NUM_HANDLES = 0;
@@ -21,7 +22,10 @@ static void publish_kill_switch_state(bool current_kill_switch_state)
     rcl_ret_t ret = rcl_publish(&is_kill_switch_closed_publisher, &is_kill_switch_closed_msg, NULL);
     if (ret != RCL_RET_OK)
     {
-        printf("Error publishing (line %d)\n", __LINE__);
+        printf("kill_switch_node: failed to publish kill switch state (rc=%d): %s\n",
+               (int)ret,
+               rcl_get_error_string().str);
+        rcl_reset_error();
     }
 }
 
@@ -55,7 +59,10 @@ void initialize_kill_switch_node(rclc_support_t *support, rclc_executor_t *execu
         "is_kill_switch_closed"
     );
     if (rc != RCL_RET_OK) {
-        printf("kill_switch_node: publisher init failed (rc=%d)\n", (int)rc);
+        printf("kill_switch_node: publisher init failed (rc=%d): %s\n",
+               (int)rc,
+               rcl_get_error_string().str);
+        rcl_reset_error();
         return;
     }
 

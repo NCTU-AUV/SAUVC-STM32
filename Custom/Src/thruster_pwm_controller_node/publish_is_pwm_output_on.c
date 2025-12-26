@@ -2,6 +2,7 @@
 
 
 #include <std_msgs/msg/bool.h>
+#include <rcl/error_handling.h>
 
 
 static struct {
@@ -19,7 +20,12 @@ static bool initialize_is_pwm_output_on_publisher(ThrusterNumber thruster_number
         topic_name
     );
     if (rc != RCL_RET_OK) {
-        printf("is_pwm_output_on publisher init failed for %s (rc=%d)\n", topic_name, (int)rc);
+        printf("thruster %d: is_pwm_output_on publisher init failed for %s (rc=%d): %s\n",
+               (int)thruster_number,
+               topic_name,
+               (int)rc,
+               rcl_get_error_string().str);
+        rcl_reset_error();
         return false;
     }
     return true;
@@ -48,7 +54,11 @@ static void publish_is_pwm_output_on(ThrusterNumber thruster_number, bool is_pwm
     rcl_ret_t ret = rcl_publish(&(thrusters_data[thruster_number].is_pwm_output_on_publisher), &is_pwm_output_on_msg, NULL);
     if (ret != RCL_RET_OK)
     {
-        printf("Error publishing (line %d)\n", __LINE__);
+        printf("thruster %d: failed to publish is_pwm_output_on (rc=%d): %s\n",
+               (int)thruster_number,
+               (int)ret,
+               rcl_get_error_string().str);
+        rcl_reset_error();
     }
 }
 

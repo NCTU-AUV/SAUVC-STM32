@@ -5,6 +5,7 @@
 
 
 #include <std_msgs/msg/bool.h>
+#include <rcl/error_handling.h>
 
 
 static struct {
@@ -18,12 +19,12 @@ static void the_set_pwm_output_on_subscriber_callback_with_context(const void * 
 {
     const std_msgs__msg__Bool * set_pwm_output_on_msg = (const std_msgs__msg__Bool *)msgin;
     if (set_pwm_output_on_msg == NULL) {
-        printf("Callback: msg NULL\n");
+        printf("set_pwm_output_on callback received null message payload\n");
         return;
     }
     
     if (context_void_ptr == NULL) {
-        printf("Callback: context is empty\n");
+        printf("set_pwm_output_on callback missing thruster context\n");
         return;
     }
     
@@ -48,7 +49,12 @@ static bool initialize_set_pwm_output_on_subscriber(ThrusterNumber thruster_numb
         topic_name
     );
     if (rc != RCL_RET_OK) {
-        printf("Failed to create subscriber %s.\n", topic_name);
+        printf("thruster %d: failed to create set_pwm_output_on subscriber for %s (rc=%d): %s\n",
+               (int)thruster_number,
+               topic_name,
+               (int)rc,
+               rcl_get_error_string().str);
+        rcl_reset_error();
         return false;
     }
 
@@ -63,7 +69,12 @@ static bool initialize_set_pwm_output_on_subscriber(ThrusterNumber thruster_numb
         ON_NEW_DATA
     );
     if (rc != RCL_RET_OK) {
-        printf("Error in rclc_executor_add_subscription. \n");
+        printf("thruster %d: failed to register set_pwm_output_on callback for %s (rc=%d): %s\n",
+               (int)thruster_number,
+               topic_name,
+               (int)rc,
+               rcl_get_error_string().str);
+        rcl_reset_error();
         return false;
     }
 

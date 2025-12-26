@@ -43,20 +43,20 @@ void thruster_pwm_controller_on_timer_tick(void)
 void initialize_thruster_pwm_controller_node(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *stm32_node)
 {
     if (!initialize_is_pwm_output_on_publisher_for_all_thrusters(stm32_node)) {
-        printf("thruster_pwm_controller_node: publisher init failed\n");
+        printf("thruster_pwm_controller_node: aborting init; failed to set up is_pwm_output_on publishers\n");
         return;
     }
     if (!initialize_pwm_output_signal_value_publisher_for_all_thrusters(stm32_node)) {
-        printf("thruster_pwm_controller_node: pwm value publisher init failed\n");
+        printf("thruster_pwm_controller_node: aborting init; failed to set up pwm_output_signal_value publishers\n");
         return;
     }
 
     if (!initialize_set_pwm_output_on_subscriber_for_all_thrusters(stm32_node, executor)) {
-        printf("thruster_pwm_controller_node: set_pwm_output_on subscriber init failed\n");
+        printf("thruster_pwm_controller_node: aborting init; failed to set up set_pwm_output_on subscribers\n");
         return;
     }
     if (!initialize_set_pwm_output_signal_value_subscriber_for_all_thrusters(stm32_node, executor)) {
-        printf("thruster_pwm_controller_node: pwm value subscriber init failed\n");
+        printf("thruster_pwm_controller_node: aborting init; failed to set up set_pwm_output_signal_value subscribers\n");
         return;
     }
 

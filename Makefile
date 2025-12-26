@@ -180,7 +180,6 @@ C_SOURCES += Custom/Src/thruster_pwm_control_driver.c
 C_SOURCES += Custom/Src/MS5837.c
 C_SOURCES += Custom/Src/kill_switch_node.c
 C_SOURCES += Custom/Src/thruster_pwm_controller_node/thruster_pwm_controller_node.c
-C_SOURCES += Custom/Src/thruster_pwm_controller_node/publish_is_pwm_output_on.c
 C_SOURCES += Custom/Src/thruster_pwm_controller_node/subscribe_set_pwm_output_on.c
 C_SOURCES += Custom/Src/thruster_pwm_controller_node/publish_pwm_output_signal_value.c
 C_SOURCES += Custom/Src/thruster_pwm_controller_node/subscribe_set_pwm_output_signal_value.c

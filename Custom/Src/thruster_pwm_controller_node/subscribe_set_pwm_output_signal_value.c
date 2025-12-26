@@ -3,76 +3,72 @@
 
 #include "thruster_pwm_control_driver.h"
 
+#include <stddef.h>
 
-#include <std_msgs/msg/int32.h>
+#include <std_msgs/msg/int32_multi_array.h>
 #include <rcl/error_handling.h>
 
 
-static struct {
-    rcl_subscription_t set_pwm_output_signal_value_subscriber;
-    std_msgs__msg__Int32 set_pwm_output_signal_value_msg;
-    ThrusterNumber thruster_number;
-} thrusters_data[8];
+static rcl_subscription_t set_pwm_output_signal_value_subscriber;
+static std_msgs__msg__Int32MultiArray set_pwm_output_signal_value_msg;
+static int32_t set_pwm_output_signal_value_buffer[8];
 
 
-static void the_set_pwm_output_signal_value_subscriber_callback_with_context(const void * msgin, void * context_void_ptr)
+static void the_set_pwm_output_signal_value_subscriber_callback(const void * msgin)
 {
-    const std_msgs__msg__Int32 * set_pwm_output_signal_value_msg = (const std_msgs__msg__Int32 *)msgin;
+    const std_msgs__msg__Int32MultiArray * set_pwm_output_signal_value_msg = (const std_msgs__msg__Int32MultiArray *)msgin;
     if (set_pwm_output_signal_value_msg == NULL) {
         printf("set_pwm_output_signal_value callback received null message payload\n");
         return;
     }
     
-    if (context_void_ptr == NULL) {
-        printf("set_pwm_output_signal_value callback missing thruster context\n");
-        return;
-    }
-    
-    const ThrusterNumber * thruster_number = (const ThrusterNumber *) context_void_ptr;
-    
-    int32_t output_signal_value_us = set_pwm_output_signal_value_msg->data;
-    if(output_signal_value_us < 0)
+    size_t values_received = set_pwm_output_signal_value_msg->data.size;
+    for (size_t i = 0; i < 8; i++)
     {
-        output_signal_value_us = -output_signal_value_us;
-    }
+        int32_t output_signal_value_us = 0;
+        if (i < values_received) {
+            output_signal_value_us = set_pwm_output_signal_value_msg->data.data[i];
+            if(output_signal_value_us < 0)
+            {
+                output_signal_value_us = -output_signal_value_us;
+            }
+        }
 
-    set_thruster_pwm_output(*thruster_number, (uint32_t)(output_signal_value_us));
+        set_thruster_pwm_output((ThrusterNumber)i, (uint32_t)(output_signal_value_us));
+    }
 }
 
 
-static bool initialize_set_pwm_output_signal_value_subscriber(ThrusterNumber thruster_number, const char *topic_name, rcl_node_t *thruster_pwm_controller_node, rclc_executor_t *executor)
+bool initialize_set_pwm_output_signal_value_subscriber(rcl_node_t *thruster_pwm_controller_node, rclc_executor_t *executor)
 {
-    thrusters_data[thruster_number].set_pwm_output_signal_value_subscriber = rcl_get_zero_initialized_subscription();
+    set_pwm_output_signal_value_subscriber = rcl_get_zero_initialized_subscription();
     rcl_ret_t rc = rclc_subscription_init_default(
-        &(thrusters_data[thruster_number].set_pwm_output_signal_value_subscriber),
+        &set_pwm_output_signal_value_subscriber,
         thruster_pwm_controller_node,
-        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
-        topic_name
+        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32MultiArray),
+        "thrusters/set_pwm_output_signal_value_us"
     );
     if (rc != RCL_RET_OK) {
-        printf("thruster %d: failed to create set_pwm_output_signal_value subscriber for %s (rc=%d): %s\n",
-               (int)thruster_number,
-               topic_name,
+        printf("failed to create set_pwm_output_signal_value subscriber (rc=%d): %s\n",
                (int)rc,
                rcl_get_error_string().str);
         rcl_reset_error();
         return false;
     }
 
-    std_msgs__msg__Int32__init(&(thrusters_data[thruster_number].set_pwm_output_signal_value_msg));
-    thrusters_data[thruster_number].thruster_number = thruster_number;
-    rc = rclc_executor_add_subscription_with_context(
+    std_msgs__msg__Int32MultiArray__init(&set_pwm_output_signal_value_msg);
+    set_pwm_output_signal_value_msg.data.data = set_pwm_output_signal_value_buffer;
+    set_pwm_output_signal_value_msg.data.capacity = 8;
+    set_pwm_output_signal_value_msg.data.size = 0;
+    rc = rclc_executor_add_subscription(
         executor,
-        &(thrusters_data[thruster_number].set_pwm_output_signal_value_subscriber),
-        &(thrusters_data[thruster_number].set_pwm_output_signal_value_msg),
-        &the_set_pwm_output_signal_value_subscriber_callback_with_context,
-        (void *) &(thrusters_data[thruster_number].thruster_number),
+        &set_pwm_output_signal_value_subscriber,
+        &set_pwm_output_signal_value_msg,
+        &the_set_pwm_output_signal_value_subscriber_callback,
         ON_NEW_DATA
     );
     if (rc != RCL_RET_OK) {
-        printf("thruster %d: failed to register set_pwm_output_signal_value callback for %s (rc=%d): %s\n",
-               (int)thruster_number,
-               topic_name,
+        printf("failed to register set_pwm_output_signal_value callback (rc=%d): %s\n",
                (int)rc,
                rcl_get_error_string().str);
         rcl_reset_error();
@@ -80,18 +76,4 @@ static bool initialize_set_pwm_output_signal_value_subscriber(ThrusterNumber thr
     }
 
     return true;
-}
-
-
-bool initialize_set_pwm_output_signal_value_subscriber_for_all_thrusters(rcl_node_t *thruster_pwm_controller_node, rclc_executor_t *executor)
-{
-    return
-        initialize_set_pwm_output_signal_value_subscriber(THRUSTER0, "thruster_0/set_pwm_output_signal_value_us", thruster_pwm_controller_node, executor) &&
-        initialize_set_pwm_output_signal_value_subscriber(THRUSTER1, "thruster_1/set_pwm_output_signal_value_us", thruster_pwm_controller_node, executor) &&
-        initialize_set_pwm_output_signal_value_subscriber(THRUSTER2, "thruster_2/set_pwm_output_signal_value_us", thruster_pwm_controller_node, executor) &&
-        initialize_set_pwm_output_signal_value_subscriber(THRUSTER3, "thruster_3/set_pwm_output_signal_value_us", thruster_pwm_controller_node, executor) &&
-        initialize_set_pwm_output_signal_value_subscriber(THRUSTER4, "thruster_4/set_pwm_output_signal_value_us", thruster_pwm_controller_node, executor) &&
-        initialize_set_pwm_output_signal_value_subscriber(THRUSTER5, "thruster_5/set_pwm_output_signal_value_us", thruster_pwm_controller_node, executor) &&
-        initialize_set_pwm_output_signal_value_subscriber(THRUSTER6, "thruster_6/set_pwm_output_signal_value_us", thruster_pwm_controller_node, executor) &&
-        initialize_set_pwm_output_signal_value_subscriber(THRUSTER7, "thruster_7/set_pwm_output_signal_value_us", thruster_pwm_controller_node, executor);
 }

@@ -1,6 +1,7 @@
 #include "pressure_sensor_node.h"
 
 
+#include <rcl/error_handling.h>
 #include <std_msgs/msg/float32.h>
 
 
@@ -20,7 +21,10 @@ static void publish_pressure_sensor_depth(float pressure_sensor_depth_m)
     rcl_ret_t ret = rcl_publish(&pressure_sensor_depth_publisher, &pressure_sensor_depth_msg, NULL);
     if (ret != RCL_RET_OK)
     {
-        printf("Error publishing (line %d)\n", __LINE__);
+        printf("pressure_sensor_node: failed to publish depth (rc=%d): %s\n",
+               (int)ret,
+               rcl_get_error_string().str);
+        rcl_reset_error();
     }
 }
 

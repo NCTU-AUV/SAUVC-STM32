@@ -600,7 +600,7 @@ void StartDefaultTask(void *argument)
   initialize_pressure_sensor_node(&support, &executor, &stm32_node, pressureSensorDepthQueueHandle);
 
   rcl_timer_t stm32_timer = rcl_get_zero_initialized_timer();
-  const unsigned int stm32_timer_timeout_ms = 100;
+  const unsigned int stm32_timer_timeout_ms = 50;
   rc = rclc_timer_init_default(
       &stm32_timer,
       &support,

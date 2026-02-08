@@ -2,6 +2,7 @@
 #define DEBUG_LOGGER_H
 
 #include <stddef.h>
+#include <stdbool.h>
 
 struct rcl_publisher_s;
 

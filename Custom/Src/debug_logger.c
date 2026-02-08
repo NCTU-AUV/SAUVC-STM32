@@ -35,7 +35,8 @@ static void publish_debug_log_buffer(void)
     msg.data.size = debug_log_buffer_len;
     msg.data.capacity = DEBUG_LOGGER_BUFFER_CAPACITY;
 
-    (void)rcl_publish(debug_log_publisher, &msg, NULL);
+    rcl_ret_t ret = rcl_publish(debug_log_publisher, &msg, NULL);
+    (void)ret;
 
     debug_log_buffer_len = 0;
 }

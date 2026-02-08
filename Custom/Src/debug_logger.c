@@ -67,3 +67,18 @@ void debug_logger_flush(void)
 {
     publish_debug_log_buffer();
 }
+
+
+bool debug_logger_publish(const char *msg)
+{
+    if (debug_log_publisher == NULL || msg == NULL) {
+        return false;
+    }
+
+    std_msgs__msg__String out;
+    out.data.data = (char *)msg;
+    out.data.size = strlen(msg);
+    out.data.capacity = out.data.size + 1;
+
+    return rcl_publish(debug_log_publisher, &out, NULL) == RCL_RET_OK;
+}

@@ -2,10 +2,12 @@
 
 
 #include "thruster_pwm_control_driver.h"
+#include "debug_logger.h"
 
 
 #include <std_msgs/msg/bool.h>
 #include <rcl/error_handling.h>
+#include <stdio.h>
 
 
 static rcl_subscription_t set_pwm_output_on_subscriber;
@@ -16,7 +18,7 @@ static void the_set_pwm_output_on_subscriber_callback(const void * msgin)
 {
     const std_msgs__msg__Bool * set_pwm_output_on_msg = (const std_msgs__msg__Bool *)msgin;
     if (set_pwm_output_on_msg == NULL) {
-        printf("set_pwm_output_on callback received null message payload\n");
+        (void)debug_logger_publish("set_pwm_output_on callback received null message payload\n");
         return;
     }
     
@@ -39,9 +41,14 @@ bool initialize_set_pwm_output_on_subscriber(rcl_node_t *thruster_pwm_controller
         "thrusters/set_pwm_output_on"
     );
     if (rc != RCL_RET_OK) {
-        printf("failed to create set_pwm_output_on subscriber (rc=%d): %s\n",
-               (int)rc,
-               rcl_get_error_string().str);
+        char msg[128];
+        int n = snprintf(msg, sizeof(msg),
+                         "failed to create set_pwm_output_on subscriber (rc=%d): %s\n",
+                         (int)rc,
+                         rcl_get_error_string().str);
+        if (n > 0) {
+            (void)debug_logger_publish(msg);
+        }
         rcl_reset_error();
         return false;
     }
@@ -55,9 +62,14 @@ bool initialize_set_pwm_output_on_subscriber(rcl_node_t *thruster_pwm_controller
         ON_NEW_DATA
     );
     if (rc != RCL_RET_OK) {
-        printf("failed to register set_pwm_output_on callback (rc=%d): %s\n",
-               (int)rc,
-               rcl_get_error_string().str);
+        char msg[128];
+        int n = snprintf(msg, sizeof(msg),
+                         "failed to register set_pwm_output_on callback (rc=%d): %s\n",
+                         (int)rc,
+                         rcl_get_error_string().str);
+        if (n > 0) {
+            (void)debug_logger_publish(msg);
+        }
         rcl_reset_error();
         return false;
     }

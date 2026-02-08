@@ -3,6 +3,9 @@
 #include <std_msgs/msg/bool.h>
 
 #include "kill_switch_driver.h"
+#include "debug_logger.h"
+
+#include <stdio.h>
 #include <rcl/error_handling.h>
 
 
@@ -22,9 +25,14 @@ static void publish_kill_switch_state(bool current_kill_switch_state)
     rcl_ret_t ret = rcl_publish(&is_kill_switch_closed_publisher, &is_kill_switch_closed_msg, NULL);
     if (ret != RCL_RET_OK)
     {
-        printf("kill_switch_node: failed to publish kill switch state (rc=%d): %s\n",
-               (int)ret,
-               rcl_get_error_string().str);
+        char msg[128];
+        int n = snprintf(msg, sizeof(msg),
+                         "kill_switch_node: failed to publish kill switch state (rc=%d): %s\n",
+                         (int)ret,
+                         rcl_get_error_string().str);
+        if (n > 0) {
+            (void)debug_logger_publish(msg);
+        }
         rcl_reset_error();
     }
 }
@@ -59,9 +67,14 @@ void initialize_kill_switch_node(rclc_support_t *support, rclc_executor_t *execu
         "is_kill_switch_closed"
     );
     if (rc != RCL_RET_OK) {
-        printf("kill_switch_node: publisher init failed (rc=%d): %s\n",
-               (int)rc,
-               rcl_get_error_string().str);
+        char msg[128];
+        int n = snprintf(msg, sizeof(msg),
+                         "kill_switch_node: publisher init failed (rc=%d): %s\n",
+                         (int)rc,
+                         rcl_get_error_string().str);
+        if (n > 0) {
+            (void)debug_logger_publish(msg);
+        }
         rcl_reset_error();
         return;
     }

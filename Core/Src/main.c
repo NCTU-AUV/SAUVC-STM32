@@ -34,6 +34,7 @@
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
 #include <std_msgs/msg/string.h>
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -586,10 +587,24 @@ void StartDefaultTask(void *argument)
   rclc_executor_t executor = rclc_executor_get_zero_initialized_executor();
   const unsigned int stm32_shared_timer_handles = 1;
   unsigned int num_handles = stm32_shared_timer_handles + KILL_SWITCH_NUM_HANDLES + THRUSTER_PWM_CONTROLLER_NUM_HANDLES + PRESSURE_SENSOR_NUM_HANDLES;
-  printf("Debug: number of DDS handles: %u\n", num_handles);
+  {
+    char msg[96];
+    int n = snprintf(msg, sizeof(msg),
+                     "Debug: number of DDS handles: %u\n",
+                     num_handles);
+    if (n > 0) {
+      (void)debug_logger_publish(msg);
+    }
+  }
   rc = rclc_executor_init(&executor, &support.context, num_handles, &allocator);
   if (rc != RCL_RET_OK) {
-    printf("rclc_executor_init failed: %d\n", (int)rc);
+    char msg[96];
+    int n = snprintf(msg, sizeof(msg),
+                     "rclc_executor_init failed: %d\n",
+                     (int)rc);
+    if (n > 0) {
+      (void)debug_logger_publish(msg);
+    }
     while (1) {
       osDelay(1000);
     }
@@ -607,7 +622,13 @@ void StartDefaultTask(void *argument)
       RCL_MS_TO_NS(stm32_timer_timeout_ms),
       stm32_timer_callback);
   if (rc != RCL_RET_OK) {
-    printf("stm32_timer init failed: %d\n", (int)rc);
+    char msg[96];
+    int n = snprintf(msg, sizeof(msg),
+                     "stm32_timer init failed: %d\n",
+                     (int)rc);
+    if (n > 0) {
+      (void)debug_logger_publish(msg);
+    }
     while (1) {
       osDelay(1000);
     }
@@ -615,7 +636,13 @@ void StartDefaultTask(void *argument)
 
   rc = rclc_executor_add_timer(&executor, &stm32_timer);
   if (rc != RCL_RET_OK) {
-    printf("stm32_timer add failed: %d\n", (int)rc);
+    char msg[96];
+    int n = snprintf(msg, sizeof(msg),
+                     "stm32_timer add failed: %d\n",
+                     (int)rc);
+    if (n > 0) {
+      (void)debug_logger_publish(msg);
+    }
     while (1) {
       osDelay(1000);
     }
@@ -653,14 +680,28 @@ void StartPressureSensorTask(void *argument)
     uint32_t init_attempt = 0;
     while (!MS5837_init(&hi2c1) && init_attempt < max_init_attempts) {
       init_attempt++;
-      printf("MS5837 init failed (attempt %lu)\n", (unsigned long)init_attempt);
+      char msg[96];
+      int n = snprintf(msg, sizeof(msg),
+                       "MS5837 init failed (attempt %lu)\n",
+                       (unsigned long)init_attempt);
+      if (n > 0) {
+        (void)debug_logger_publish(msg);
+      }
       osDelay(init_attempt < 5 ? 1000 : 5000);
     }
     if (init_attempt < max_init_attempts) {
       break;
     }
 
-    printf("MS5837 failed to init after %lu attempts; retrying in 10s\n", (unsigned long)max_init_attempts);
+    {
+      char msg[112];
+      int n = snprintf(msg, sizeof(msg),
+                       "MS5837 failed to init after %lu attempts; retrying in 10s\n",
+                       (unsigned long)max_init_attempts);
+      if (n > 0) {
+        (void)debug_logger_publish(msg);
+      }
+    }
     osDelay(10000);
   }
 
@@ -669,7 +710,7 @@ void StartPressureSensorTask(void *argument)
   for(;;)
   {
     if (!MS5837_read()) {
-      printf("MS5837 read failed; skipping publish\n");
+      (void)debug_logger_publish("MS5837 read failed; skipping publish\n");
       osDelay(50);
       continue;
     }
@@ -687,7 +728,13 @@ void StartPressureSensorTask(void *argument)
       queue_status = osMessageQueuePut(pressureSensorDepthQueueHandle, &pressure_sensor_depth_reading, 0U, 0U);
     }
     if (queue_status != osOK) {
-      printf("pressureSensorDepthQueue put failed: %ld\n", (long)queue_status);
+      char msg[96];
+      int n = snprintf(msg, sizeof(msg),
+                       "pressureSensorDepthQueue put failed: %ld\n",
+                       (long)queue_status);
+      if (n > 0) {
+        (void)debug_logger_publish(msg);
+      }
     }
 
     osDelay(10);

@@ -2,6 +2,7 @@
 
 
 #include "kill_switch_driver.h"
+#include "debug_logger.h"
 
 #include <stdio.h>
 
@@ -16,7 +17,13 @@ static uint32_t clamp_pwm_output_signal_us(ThrusterNumber thruster_number, uint3
 {
     TIM_HandleTypeDef *htim = thruster_profiles[thruster_number].thruster_htim;
     if (htim == NULL) {
-        printf("Thruster %d timer not initialized; ignoring PWM request.\n", (int)thruster_number);
+        char msg[96];
+        int n = snprintf(msg, sizeof(msg),
+                         "Thruster %d timer not initialized; ignoring PWM request.\n",
+                         (int)thruster_number);
+        if (n > 0) {
+            (void)debug_logger_publish(msg);
+        }
         return 0;
     }
 

@@ -2,6 +2,7 @@
 
 #include "thruster_pwm_controller_node/subscribe_set_pwm_output_on.h"
 #include "thruster_pwm_controller_node/subscribe_set_pwm_output_signal_value.h"
+#include "debug_logger.h"
 
 const unsigned int THRUSTER_PWM_CONTROLLER_NUM_HANDLES = 1 + 1;
 
@@ -21,11 +22,11 @@ void thruster_pwm_controller_on_timer_tick(void)
 void initialize_thruster_pwm_controller_node(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *stm32_node)
 {
     if (!initialize_set_pwm_output_on_subscriber(stm32_node, executor)) {
-        printf("thruster_pwm_controller_node: aborting init; failed to set up set_pwm_output_on subscriber\n");
+        (void)debug_logger_publish("thruster_pwm_controller_node: aborting init; failed to set up set_pwm_output_on subscriber\n");
         return;
     }
     if (!initialize_set_pwm_output_signal_value_subscriber(stm32_node, executor)) {
-        printf("thruster_pwm_controller_node: aborting init; failed to set up set_pwm_output_signal_value subscriber\n");
+        (void)debug_logger_publish("thruster_pwm_controller_node: aborting init; failed to set up set_pwm_output_signal_value subscriber\n");
         return;
     }
 }

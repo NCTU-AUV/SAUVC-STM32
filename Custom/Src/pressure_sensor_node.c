@@ -4,6 +4,9 @@
 #include <rcl/error_handling.h>
 #include <std_msgs/msg/float32.h>
 
+#include "debug_logger.h"
+#include <stdio.h>
+
 
 const unsigned int PRESSURE_SENSOR_NUM_HANDLES = 0;
 
@@ -21,9 +24,14 @@ static void publish_pressure_sensor_depth(float pressure_sensor_depth_m)
     rcl_ret_t ret = rcl_publish(&pressure_sensor_depth_publisher, &pressure_sensor_depth_msg, NULL);
     if (ret != RCL_RET_OK)
     {
-        printf("pressure_sensor_node: failed to publish depth (rc=%d): %s\n",
-               (int)ret,
-               rcl_get_error_string().str);
+        char msg[128];
+        int n = snprintf(msg, sizeof(msg),
+                         "pressure_sensor_node: failed to publish depth (rc=%d): %s\n",
+                         (int)ret,
+                         rcl_get_error_string().str);
+        if (n > 0) {
+            (void)debug_logger_publish(msg);
+        }
         rcl_reset_error();
     }
 }
@@ -64,9 +72,14 @@ void initialize_pressure_sensor_node(rclc_support_t *support, rclc_executor_t *e
         "pressure_sensor_depth_m"
     );
     if (rc != RCL_RET_OK) {
-        printf("pressure_sensor_node: publisher init failed (rc=%d): %s\n",
-               (int)rc,
-               rcl_get_error_string().str);
+        char msg[128];
+        int n = snprintf(msg, sizeof(msg),
+                         "pressure_sensor_node: publisher init failed (rc=%d): %s\n",
+                         (int)rc,
+                         rcl_get_error_string().str);
+        if (n > 0) {
+            (void)debug_logger_publish(msg);
+        }
         rcl_reset_error();
         return;
     }

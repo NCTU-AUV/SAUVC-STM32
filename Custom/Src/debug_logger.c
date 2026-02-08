@@ -35,7 +35,8 @@ static void publish_debug_log_buffer(void)
     msg.data.size = debug_log_buffer_len;
     msg.data.capacity = DEBUG_LOGGER_BUFFER_CAPACITY;
 
-    (void)rcl_publish(debug_log_publisher, &msg, NULL);
+    rcl_ret_t ret = rcl_publish(debug_log_publisher, &msg, NULL);
+    (void)ret;
 
     debug_log_buffer_len = 0;
 }
@@ -66,4 +67,19 @@ void debug_logger_on_write(const char *data, size_t len)
 void debug_logger_flush(void)
 {
     publish_debug_log_buffer();
+}
+
+
+bool debug_logger_publish(const char *msg)
+{
+    if (debug_log_publisher == NULL || msg == NULL) {
+        return false;
+    }
+
+    std_msgs__msg__String out;
+    out.data.data = (char *)msg;
+    out.data.size = strlen(msg);
+    out.data.capacity = out.data.size + 1;
+
+    return rcl_publish(debug_log_publisher, &out, NULL) == RCL_RET_OK;
 }

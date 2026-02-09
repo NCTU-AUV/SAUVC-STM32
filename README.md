@@ -1,6 +1,4 @@
-# use-micro-ros
-
-This branch is intended to develop alongsied [SAUVC2024-RPI/use-ros2](https://github.com/NCTU-AUV/SAUVC2024-RPI/tree/use-ros2).
+# SAUVC-STM32
 
 ## Install Micro-ROS
 

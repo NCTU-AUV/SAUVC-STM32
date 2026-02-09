@@ -1,9 +1,5 @@
 # SAUVC-STM32
 
-## Install Micro-ROS
-
-Follow: [Setting up micro-ROS on any STM32 microcontroller](https://github.com/lFatality/stm32_micro_ros_setup?tab=readme-ov-file#setting-up-micro-ros-on-any-stm32-microcontroller)
-
 ## Generate Code
 
 Use STM32CubeMX 6.12.0 to generate code. Note that STM32CubeMX 6.12.1 seems to have bugs that generates code causing an error when running `make`.
@@ -22,3 +18,7 @@ Compile the program.
 ```bash
 make -j$(nproc)
 ```
+
+## References
+
+- [Setting up micro-ROS on any STM32 microcontroller](https://github.com/lFatality/stm32_micro_ros_setup?tab=readme-ov-file#setting-up-micro-ros-on-any-stm32-microcontroller)

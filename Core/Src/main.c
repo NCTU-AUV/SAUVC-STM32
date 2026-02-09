@@ -648,12 +648,27 @@ void StartDefaultTask(void *argument)
     }
   }
 
+  const uint32_t debug_period_ticks = osKernelGetTickFreq() * 2U;
+  uint32_t last_debug_tick = osKernelGetTickCount();
+
   /* Infinite loop */
   for(;;)
   {
     if(is_kill_switch_closed())
     {
       stop_all_thrusters_pwm_output();
+    }
+
+    uint32_t now_tick = osKernelGetTickCount();
+    if ((uint32_t)(now_tick - last_debug_tick) >= debug_period_ticks) {
+      last_debug_tick = now_tick;
+      char alive_msg[64];
+      int n = snprintf(alive_msg, sizeof(alive_msg),
+                       "Main loop alive (tick %lu)\n",
+                       (unsigned long)now_tick);
+      if (n > 0) {
+        (void)debug_logger_publish(alive_msg);
+      }
     }
 
     rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));

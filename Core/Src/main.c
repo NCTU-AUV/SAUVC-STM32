@@ -103,6 +103,20 @@ static void stm32_timer_callback(rcl_timer_t *timer, int64_t last_call_time);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static void log_pressure_sensor_i2c_state(const char *context)
+{
+  HAL_I2C_StateTypeDef state = HAL_I2C_GetState(&hi2c1);
+  uint32_t error = HAL_I2C_GetError(&hi2c1);
+  char msg[128];
+  int n = snprintf(msg, sizeof(msg),
+                   "MS5837 %s: I2C state=%lu error=0x%08lx\n",
+                   context,
+                   (unsigned long)state,
+                   (unsigned long)error);
+  if (n > 0) {
+    (void)debug_logger_publish(msg);
+  }
+}
 
 /* USER CODE END 0 */
 
@@ -702,6 +716,7 @@ void StartPressureSensorTask(void *argument)
       if (n > 0) {
         (void)debug_logger_publish(msg);
       }
+      log_pressure_sensor_i2c_state("init failed");
       osDelay(init_attempt < 5 ? 1000 : 5000);
     }
     if (init_attempt < max_init_attempts) {
@@ -726,6 +741,7 @@ void StartPressureSensorTask(void *argument)
   {
     if (!MS5837_read()) {
       (void)debug_logger_publish("MS5837 read failed; skipping publish\n");
+      log_pressure_sensor_i2c_state("read failed");
       osDelay(50);
       continue;
     }

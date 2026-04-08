@@ -23,12 +23,12 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "micro_ros_configuration.h"
-#include "thruster_pwm_control_driver.h"
-#include "thruster_pwm_controller_node/thruster_pwm_controller_node.h"
-#include "kill_switch_driver.h"
-#include "kill_switch_node.h"
+#include "orca_stm32_thruster_pwm_driver.h"
+#include "orca_stm32_thruster_pwm_controller/orca_stm32_thruster_pwm_controller.h"
+#include "orca_stm32_kill_switch_driver.h"
+#include "orca_stm32_kill_switch_node.h"
 #include "MS5837.h"
-#include "pressure_sensor_node.h"
+#include "orca_stm32_pressure_sensor_node.h"
 #include "debug_logger.h"
 
 #include <rclc/rclc.h>
@@ -563,10 +563,10 @@ void StartDefaultTask(void *argument)
     }
   }
 
-  rcl_node_t stm32_node = rcl_get_zero_initialized_node();
-  rc = rclc_node_init_default(&stm32_node, "stm32_node", "orca_auv", &support);
+  rcl_node_t orca_stm32_bridge = rcl_get_zero_initialized_node();
+  rc = rclc_node_init_default(&orca_stm32_bridge, "orca_stm32_bridge", "orca_auv", &support);
   if (rc != RCL_RET_OK) {
-    printf("stm32_node init failed: %d\n", (int)rc);
+    printf("orca_stm32_bridge init failed: %d\n", (int)rc);
     while (1) {
       osDelay(1000);
     }
@@ -575,9 +575,9 @@ void StartDefaultTask(void *argument)
   rcl_publisher_t debug_log_publisher = rcl_get_zero_initialized_publisher();
   rc = rclc_publisher_init_default(
       &debug_log_publisher,
-      &stm32_node,
+      &orca_stm32_bridge,
       ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, String),
-      "stm32_debug_log");
+      "orca_stm32_debug_log");
   if (rc != RCL_RET_OK) {
     printf("debug_log publisher init failed: %d\n", (int)rc);
   } else {
@@ -610,9 +610,9 @@ void StartDefaultTask(void *argument)
     }
   }
 
-  initialize_kill_switch_node(&support, &executor, &stm32_node);
-  initialize_thruster_pwm_controller_node(&support, &executor, &stm32_node);
-  initialize_pressure_sensor_node(&support, &executor, &stm32_node, pressureSensorDepthQueueHandle);
+  initialize_orca_stm32_kill_switch_node(&support, &executor, &orca_stm32_bridge);
+  initialize_orca_stm32_thruster_pwm_controller(&support, &executor, &orca_stm32_bridge);
+  initialize_orca_stm32_pressure_sensor_node(&support, &executor, &orca_stm32_bridge, pressureSensorDepthQueueHandle);
 
   rcl_timer_t stm32_timer = rcl_get_zero_initialized_timer();
   const unsigned int stm32_timer_timeout_ms = 50;
@@ -654,7 +654,7 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    if(is_kill_switch_closed())
+    if(orca_stm32_kill_switch_closed())
     {
       stop_all_thrusters_pwm_output();
     }

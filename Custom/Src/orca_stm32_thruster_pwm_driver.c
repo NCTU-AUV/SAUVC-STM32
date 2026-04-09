@@ -1,7 +1,7 @@
-#include "thruster_pwm_control_driver.h"
+#include "orca_stm32_thruster_pwm_driver.h"
 
 
-#include "kill_switch_driver.h"
+#include "orca_stm32_kill_switch_driver.h"
 #include "debug_logger.h"
 
 #include <stdio.h>
@@ -94,7 +94,7 @@ void set_thruster_pwm_output(ThrusterNumber thruster_number, uint32_t output_sig
 
 void start_thruster_pwm_output(ThrusterNumber thruster_number)
 {
-    if(is_kill_switch_closed())
+    if(orca_stm32_kill_switch_closed())
     {
         return;
     }

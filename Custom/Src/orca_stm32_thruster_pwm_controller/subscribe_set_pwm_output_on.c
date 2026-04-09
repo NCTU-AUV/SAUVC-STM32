@@ -1,7 +1,7 @@
-#include "thruster_pwm_controller_node/subscribe_set_pwm_output_on.h"
+#include "orca_stm32_thruster_pwm_controller/subscribe_set_pwm_output_on.h"
 
 
-#include "thruster_pwm_control_driver.h"
+#include "orca_stm32_thruster_pwm_driver.h"
 #include "debug_logger.h"
 
 
@@ -31,12 +31,12 @@ static void the_set_pwm_output_on_subscriber_callback(const void * msgin)
 }
 
 
-bool initialize_set_pwm_output_on_subscriber(rcl_node_t *thruster_pwm_controller_node, rclc_executor_t *executor)
+bool initialize_set_pwm_output_on_subscriber(rcl_node_t *orca_stm32_thruster_pwm_controller, rclc_executor_t *executor)
 {
     set_pwm_output_on_subscriber = rcl_get_zero_initialized_subscription();
     rcl_ret_t rc = rclc_subscription_init_default(
         &set_pwm_output_on_subscriber,
-        thruster_pwm_controller_node,
+        orca_stm32_thruster_pwm_controller,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
         "thrusters/set_pwm_output_on"
     );

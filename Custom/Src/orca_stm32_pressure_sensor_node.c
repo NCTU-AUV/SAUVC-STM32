@@ -1,4 +1,4 @@
-#include "pressure_sensor_node.h"
+#include "orca_stm32_pressure_sensor_node.h"
 
 
 #include <rcl/error_handling.h>
@@ -16,17 +16,17 @@ static rcl_publisher_t pressure_sensor_depth_publisher;
 static osMessageQueueId_t pressure_sensor_depth_queue_handle;
 
 
-static void publish_pressure_sensor_depth(float pressure_sensor_depth_m)
+static void publish_pressure_sensor_depth(float orca_stm32_pressure_depth_m)
 {
-    std_msgs__msg__Float32 pressure_sensor_depth_msg;
-    pressure_sensor_depth_msg.data = pressure_sensor_depth_m;
+    std_msgs__msg__Float32 orca_stm32_pressure_depth_msg;
+    orca_stm32_pressure_depth_msg.data = orca_stm32_pressure_depth_m;
 
-    rcl_ret_t ret = rcl_publish(&pressure_sensor_depth_publisher, &pressure_sensor_depth_msg, NULL);
+    rcl_ret_t ret = rcl_publish(&pressure_sensor_depth_publisher, &orca_stm32_pressure_depth_msg, NULL);
     if (ret != RCL_RET_OK)
     {
         char msg[128];
         int n = snprintf(msg, sizeof(msg),
-                         "pressure_sensor_node: failed to publish depth (rc=%d): %s\n",
+                         "orca_stm32_pressure_sensor_node: failed to publish depth (rc=%d): %s\n",
                          (int)ret,
                          rcl_get_error_string().str);
         if (n > 0) {
@@ -39,17 +39,17 @@ static void publish_pressure_sensor_depth(float pressure_sensor_depth_m)
 
 static void pressure_sensor_timer_callback(rcl_timer_t *, int64_t)
 {
-    float pressure_sensor_depth_m = 0.0f;
-    float latest_pressure_sensor_depth_m = 0.0f;
+    float orca_stm32_pressure_depth_m = 0.0f;
+    float latest_orca_stm32_pressure_depth_m = 0.0f;
     bool has_sample = false;
 
-    while (osMessageQueueGet(pressure_sensor_depth_queue_handle, &pressure_sensor_depth_m, NULL, 0U) == osOK) {
-        latest_pressure_sensor_depth_m = pressure_sensor_depth_m;
+    while (osMessageQueueGet(pressure_sensor_depth_queue_handle, &orca_stm32_pressure_depth_m, NULL, 0U) == osOK) {
+        latest_orca_stm32_pressure_depth_m = orca_stm32_pressure_depth_m;
         has_sample = true;
     }
 
     if (has_sample) {
-        publish_pressure_sensor_depth(latest_pressure_sensor_depth_m);
+        publish_pressure_sensor_depth(latest_orca_stm32_pressure_depth_m);
     }
 }
 
@@ -60,21 +60,21 @@ void pressure_sensor_on_timer_tick(void)
 }
 
 
-void initialize_pressure_sensor_node(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *stm32_node, osMessageQueueId_t pressureSensorDepthQueueHandle)
+void initialize_orca_stm32_pressure_sensor_node(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *orca_stm32_bridge, osMessageQueueId_t pressureSensorDepthQueueHandle)
 {
     (void)executor;
 
     // create publisher
     rcl_ret_t rc = rclc_publisher_init_default(
         &pressure_sensor_depth_publisher,
-        stm32_node,
+        orca_stm32_bridge,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32),
-        "pressure_sensor_depth_m"
+        "orca_stm32_pressure_depth_m"
     );
     if (rc != RCL_RET_OK) {
         char msg[128];
         int n = snprintf(msg, sizeof(msg),
-                         "pressure_sensor_node: publisher init failed (rc=%d): %s\n",
+                         "orca_stm32_pressure_sensor_node: publisher init failed (rc=%d): %s\n",
                          (int)rc,
                          rcl_get_error_string().str);
         if (n > 0) {

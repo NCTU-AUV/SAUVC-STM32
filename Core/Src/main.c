@@ -721,14 +721,27 @@ void StartPressureSensorTask(void *argument)
   }
 
   MS5837_setFluidDensity(997);
+
+  uint32_t consecutive_pressure_read_failures = 0;
+  const uint32_t pressure_read_reinit_threshold = 3;
+
   /* Infinite loop */
   for(;;)
   {
     if (!MS5837_read()) {
-      (void)debug_logger_publish("MS5837 read failed; skipping publish\n");
+      consecutive_pressure_read_failures++;
+      if (consecutive_pressure_read_failures >= pressure_read_reinit_threshold) {
+        (void)debug_logger_publish("MS5837 read failed repeatedly; reinitializing sensor\n");
+        (void)MS5837_init(&hi2c1);
+        consecutive_pressure_read_failures = 0;
+      } else {
+        (void)debug_logger_publish("MS5837 read failed; skipping publish\n");
+      }
       osDelay(50);
       continue;
     }
+
+    consecutive_pressure_read_failures = 0;
 
     (void)MS5837_pressure_default();
     (void)MS5837_temperature();

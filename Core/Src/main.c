@@ -98,6 +98,8 @@ void StartPressureSensorTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 static void stm32_timer_callback(rcl_timer_t *timer, int64_t last_call_time);
+static bool initialize_pressure_sensor_with_retries(uint32_t max_init_attempts);
+static bool recover_pressure_sensor_after_failures(uint32_t consecutive_failures);
 
 /* USER CODE END PFP */
 
@@ -524,6 +526,68 @@ static void stm32_timer_callback(rcl_timer_t *timer, int64_t last_call_time)
   thruster_pwm_controller_on_timer_tick();
   pressure_sensor_on_timer_tick();
 }
+
+static bool initialize_pressure_sensor_with_retries(uint32_t max_init_attempts)
+{
+  for (uint32_t init_attempt = 1; init_attempt <= max_init_attempts; ++init_attempt) {
+    if (MS5837_init(&hi2c1)) {
+      MS5837_setFluidDensity(997);
+      if (init_attempt > 1U) {
+        char msg[96];
+        int n = snprintf(msg, sizeof(msg),
+                         "MS5837 init recovered on attempt %lu\n",
+                         (unsigned long)init_attempt);
+        if (n > 0) {
+          (void)debug_logger_publish(msg);
+        }
+      }
+      return true;
+    }
+
+    char msg[96];
+    int n = snprintf(msg, sizeof(msg),
+                     "MS5837 init failed (attempt %lu/%lu)\n",
+                     (unsigned long)init_attempt,
+                     (unsigned long)max_init_attempts);
+    if (n > 0) {
+      (void)debug_logger_publish(msg);
+    }
+
+    osDelay(init_attempt < max_init_attempts ? 1000U : 5000U);
+  }
+
+  return false;
+}
+
+static bool recover_pressure_sensor_after_failures(uint32_t consecutive_failures)
+{
+  char msg[128];
+  int n = snprintf(msg, sizeof(msg),
+                   "MS5837 read failed %lu times; reinitializing I2C and sensor\n",
+                   (unsigned long)consecutive_failures);
+  if (n > 0) {
+    (void)debug_logger_publish(msg);
+  }
+
+  if (HAL_I2C_DeInit(&hi2c1) != HAL_OK) {
+    (void)debug_logger_publish("MS5837 recovery: HAL_I2C_DeInit failed\n");
+  }
+
+  osDelay(10U);
+
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK) {
+    (void)debug_logger_publish("MS5837 recovery: HAL_I2C_Init failed\n");
+    return false;
+  }
+
+  if (!initialize_pressure_sensor_with_retries(5U)) {
+    (void)debug_logger_publish("MS5837 recovery: sensor reinit failed after I2C reset\n");
+    return false;
+  }
+
+  (void)debug_logger_publish("MS5837 recovery: sensor communication restored\n");
+  return true;
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -688,47 +752,51 @@ void StartDefaultTask(void *argument)
 void StartPressureSensorTask(void *argument)
 {
   /* USER CODE BEGIN StartPressureSensorTask */
+  (void)argument;
   MS5837_MS5837();
 
-  const uint32_t max_init_attempts = 5;
-  while (1) {
-    uint32_t init_attempt = 0;
-    while (!MS5837_init(&hi2c1) && init_attempt < max_init_attempts) {
-      init_attempt++;
-      char msg[96];
-      int n = snprintf(msg, sizeof(msg),
-                       "MS5837 init failed (attempt %lu)\n",
-                       (unsigned long)init_attempt);
-      if (n > 0) {
-        (void)debug_logger_publish(msg);
-      }
-      osDelay(init_attempt < 5 ? 1000 : 5000);
+  const uint32_t max_init_attempts = 5U;
+  const uint32_t max_consecutive_read_failures_before_recovery = 5U;
+  while (!initialize_pressure_sensor_with_retries(max_init_attempts)) {
+    char msg[112];
+    int n = snprintf(msg, sizeof(msg),
+                     "MS5837 failed to init after %lu attempts; retrying in 10s\n",
+                     (unsigned long)max_init_attempts);
+    if (n > 0) {
+      (void)debug_logger_publish(msg);
     }
-    if (init_attempt < max_init_attempts) {
-      break;
-    }
-
-    {
-      char msg[112];
-      int n = snprintf(msg, sizeof(msg),
-                       "MS5837 failed to init after %lu attempts; retrying in 10s\n",
-                       (unsigned long)max_init_attempts);
-      if (n > 0) {
-        (void)debug_logger_publish(msg);
-      }
-    }
-    osDelay(10000);
+    osDelay(10000U);
   }
 
-  MS5837_setFluidDensity(997);
+  uint32_t consecutive_read_failures = 0U;
+
   /* Infinite loop */
   for(;;)
   {
     if (!MS5837_read()) {
-      (void)debug_logger_publish("MS5837 read failed; skipping publish\n");
-      osDelay(50);
+      consecutive_read_failures++;
+
+      char msg[112];
+      int n = snprintf(msg, sizeof(msg),
+                       "MS5837 read failed (%lu/%lu)\n",
+                       (unsigned long)consecutive_read_failures,
+                       (unsigned long)max_consecutive_read_failures_before_recovery);
+      if (n > 0) {
+        (void)debug_logger_publish(msg);
+      }
+
+      if (consecutive_read_failures >= max_consecutive_read_failures_before_recovery) {
+        if (!recover_pressure_sensor_after_failures(consecutive_read_failures)) {
+          osDelay(1000U);
+        }
+        consecutive_read_failures = 0U;
+      } else {
+        osDelay(50U);
+      }
       continue;
     }
+
+    consecutive_read_failures = 0U;
 
     (void)MS5837_pressure_default();
     (void)MS5837_temperature();
@@ -752,7 +820,7 @@ void StartPressureSensorTask(void *argument)
       }
     }
 
-    osDelay(10);
+    osDelay(10U);
   }
   /* USER CODE END StartPressureSensorTask */
 }

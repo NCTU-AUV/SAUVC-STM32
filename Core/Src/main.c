@@ -29,6 +29,7 @@
 #include "orca_stm32_kill_switch_node.h"
 #include "MS5837.h"
 #include "orca_stm32_pressure_sensor_node.h"
+#include "orca_stm32_electromagnet_controller.h"
 #include "debug_logger.h"
 
 #include <rclc/rclc.h>
@@ -596,7 +597,7 @@ void StartDefaultTask(void *argument)
 
   rclc_executor_t executor = rclc_executor_get_zero_initialized_executor();
   const unsigned int stm32_shared_timer_handles = 1;
-  unsigned int num_handles = stm32_shared_timer_handles + KILL_SWITCH_NUM_HANDLES + THRUSTER_PWM_CONTROLLER_NUM_HANDLES + PRESSURE_SENSOR_NUM_HANDLES;
+  unsigned int num_handles = stm32_shared_timer_handles + KILL_SWITCH_NUM_HANDLES + THRUSTER_PWM_CONTROLLER_NUM_HANDLES + PRESSURE_SENSOR_NUM_HANDLES + ELECTROMAGNET_CONTROLLER_NUM_HANDLES;
   {
     char msg[96];
     int n = snprintf(msg, sizeof(msg),
@@ -623,6 +624,7 @@ void StartDefaultTask(void *argument)
   initialize_orca_stm32_kill_switch_node(&support, &executor, &orca_stm32_bridge);
   initialize_orca_stm32_thruster_pwm_controller(&support, &executor, &orca_stm32_bridge);
   initialize_orca_stm32_pressure_sensor_node(&support, &executor, &orca_stm32_bridge, pressureSensorDepthQueueHandle);
+  initialize_orca_stm32_electromagnet_controller(&support, &executor, &orca_stm32_bridge);
 
   rcl_timer_t stm32_timer = rcl_get_zero_initialized_timer();
   const unsigned int stm32_timer_timeout_ms = 50;

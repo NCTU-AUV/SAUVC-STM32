@@ -183,6 +183,7 @@ C_SOURCES += Custom/Src/orca_stm32_thruster_pwm_controller/orca_stm32_thruster_p
 C_SOURCES += Custom/Src/orca_stm32_thruster_pwm_controller/subscribe_set_pwm_output_on.c
 C_SOURCES += Custom/Src/orca_stm32_thruster_pwm_controller/subscribe_set_pwm_output_signal_value.c
 C_SOURCES += Custom/Src/orca_stm32_pressure_sensor_node.c
+C_SOURCES += Custom/Src/orca_stm32_electromagnet_controller.c
 C_SOURCES += Custom/Src/debug_logger.c
 
 #######################################

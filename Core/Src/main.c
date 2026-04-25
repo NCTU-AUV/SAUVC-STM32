@@ -29,6 +29,7 @@
 #include "orca_stm32_kill_switch_node.h"
 #include "MS5837.h"
 #include "orca_stm32_pressure_sensor_node.h"
+#include "orca_stm32_electromagnet_controller.h"
 #include "debug_logger.h"
 
 #include <rclc/rclc.h>
@@ -505,10 +506,20 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : PE2 */
   GPIO_InitStruct.Pin = GPIO_PIN_2;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PE3 */
+  GPIO_InitStruct.Pin = GPIO_PIN_3;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
@@ -586,7 +597,7 @@ void StartDefaultTask(void *argument)
 
   rclc_executor_t executor = rclc_executor_get_zero_initialized_executor();
   const unsigned int stm32_shared_timer_handles = 1;
-  unsigned int num_handles = stm32_shared_timer_handles + KILL_SWITCH_NUM_HANDLES + THRUSTER_PWM_CONTROLLER_NUM_HANDLES + PRESSURE_SENSOR_NUM_HANDLES;
+  unsigned int num_handles = stm32_shared_timer_handles + KILL_SWITCH_NUM_HANDLES + THRUSTER_PWM_CONTROLLER_NUM_HANDLES + PRESSURE_SENSOR_NUM_HANDLES + ELECTROMAGNET_CONTROLLER_NUM_HANDLES;
   {
     char msg[96];
     int n = snprintf(msg, sizeof(msg),
@@ -613,6 +624,7 @@ void StartDefaultTask(void *argument)
   initialize_orca_stm32_kill_switch_node(&support, &executor, &orca_stm32_bridge);
   initialize_orca_stm32_thruster_pwm_controller(&support, &executor, &orca_stm32_bridge);
   initialize_orca_stm32_pressure_sensor_node(&support, &executor, &orca_stm32_bridge, pressureSensorDepthQueueHandle);
+  initialize_orca_stm32_electromagnet_controller(&support, &executor, &orca_stm32_bridge);
 
   rcl_timer_t stm32_timer = rcl_get_zero_initialized_timer();
   const unsigned int stm32_timer_timeout_ms = 50;

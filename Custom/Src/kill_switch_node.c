@@ -1,8 +1,8 @@
-#include "orca_stm32_kill_switch_node.h"
+#include "kill_switch_node.h"
 
 #include <std_msgs/msg/bool.h>
 
-#include "orca_stm32_kill_switch_driver.h"
+#include "kill_switch_driver.h"
 #include "debug_logger.h"
 
 #include <stdio.h>

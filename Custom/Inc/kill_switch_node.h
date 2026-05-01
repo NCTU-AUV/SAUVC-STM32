@@ -6,7 +6,7 @@
 
 extern const unsigned int KILL_SWITCH_NUM_HANDLES;
 
-void initialize_orca_stm32_kill_switch_node(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *orca_stm32_bridge);
+void initialize_kill_switch_node(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *bridge);
 void kill_switch_on_timer_tick(void);
 
 #endif

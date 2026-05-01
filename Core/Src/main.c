@@ -574,10 +574,10 @@ void StartDefaultTask(void *argument)
     }
   }
 
-  rcl_node_t orca_stm32_bridge = rcl_get_zero_initialized_node();
-  rc = rclc_node_init_default(&orca_stm32_bridge, "orca_stm32_bridge", "orca_auv", &support);
+  rcl_node_t bridge = rcl_get_zero_initialized_node();
+  rc = rclc_node_init_default(&bridge, "stm32_bridge", "orca_auv", &support);
   if (rc != RCL_RET_OK) {
-    printf("orca_stm32_bridge init failed: %d\n", (int)rc);
+    printf("stm32_bridge init failed: %d\n", (int)rc);
     while (1) {
       osDelay(1000);
     }
@@ -586,7 +586,7 @@ void StartDefaultTask(void *argument)
   rcl_publisher_t debug_log_publisher = rcl_get_zero_initialized_publisher();
   rc = rclc_publisher_init_default(
       &debug_log_publisher,
-      &orca_stm32_bridge,
+      &bridge,
       ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, String),
       "diagnostics/stm32/log");
   if (rc != RCL_RET_OK) {
@@ -621,10 +621,10 @@ void StartDefaultTask(void *argument)
     }
   }
 
-  initialize_orca_stm32_kill_switch_node(&support, &executor, &orca_stm32_bridge);
-  initialize_orca_stm32_thruster_pwm_controller(&support, &executor, &orca_stm32_bridge);
-  initialize_orca_stm32_pressure_sensor_node(&support, &executor, &orca_stm32_bridge, pressureSensorDepthQueueHandle);
-  initialize_orca_stm32_electromagnet_controller(&support, &executor, &orca_stm32_bridge);
+  initialize_kill_switch_node(&support, &executor, &bridge);
+  initialize_thruster_pwm_controller(&support, &executor, &bridge);
+  initialize_pressure_sensor_node(&support, &executor, &bridge, pressureSensorDepthQueueHandle);
+  initialize_electromagnet_controller(&support, &executor, &bridge);
 
   rcl_timer_t stm32_timer = rcl_get_zero_initialized_timer();
   const unsigned int stm32_timer_timeout_ms = 50;
@@ -666,7 +666,7 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    if(orca_stm32_kill_switch_closed())
+    if(kill_switch_closed())
     {
       stop_all_thrusters_pwm_output();
     }

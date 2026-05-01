@@ -19,14 +19,14 @@ void thruster_pwm_controller_on_timer_tick(void)
 }
 
 
-void initialize_orca_stm32_thruster_pwm_controller(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *orca_stm32_bridge)
+void initialize_thruster_pwm_controller(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *bridge)
 {
-    if (!initialize_set_pwm_output_on_subscriber(orca_stm32_bridge, executor)) {
-        (void)debug_logger_publish("orca_stm32_thruster_pwm_controller: aborting init; failed to set up set_pwm_output_on subscriber\n");
+    if (!initialize_set_pwm_output_on_subscriber(bridge, executor)) {
+        (void)debug_logger_publish("thruster_pwm_controller: aborting init; failed to set up set_pwm_output_on subscriber\n");
         return;
     }
-    if (!initialize_set_pwm_output_signal_value_subscriber(orca_stm32_bridge, executor)) {
-        (void)debug_logger_publish("orca_stm32_thruster_pwm_controller: aborting init; failed to set up set_pwm_output_signal_value subscriber\n");
+    if (!initialize_set_pwm_output_signal_value_subscriber(bridge, executor)) {
+        (void)debug_logger_publish("thruster_pwm_controller: aborting init; failed to set up set_pwm_output_signal_value subscriber\n");
         return;
     }
 }

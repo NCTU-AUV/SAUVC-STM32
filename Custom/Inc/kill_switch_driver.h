@@ -3,6 +3,6 @@
 
 #include <stdbool.h>
 
-bool orca_stm32_kill_switch_closed();
+bool kill_switch_closed();
 
 #endif

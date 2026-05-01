@@ -33,7 +33,7 @@ static void electromagnet_set_on_callback(const void *msgin)
 }
 
 
-void initialize_orca_stm32_electromagnet_controller(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *orca_stm32_bridge)
+void initialize_electromagnet_controller(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *bridge)
 {
     (void)support;
 
@@ -42,7 +42,7 @@ void initialize_orca_stm32_electromagnet_controller(rclc_support_t *support, rcl
     electromagnet_set_on_subscriber = rcl_get_zero_initialized_subscription();
     rcl_ret_t rc = rclc_subscription_init_default(
         &electromagnet_set_on_subscriber,
-        orca_stm32_bridge,
+        bridge,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
         "actuators/electromagnet/enabled"
     );

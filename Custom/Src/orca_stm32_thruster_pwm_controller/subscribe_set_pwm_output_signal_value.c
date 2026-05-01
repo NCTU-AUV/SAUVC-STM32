@@ -48,7 +48,7 @@ bool initialize_set_pwm_output_signal_value_subscriber(rcl_node_t *orca_stm32_th
         &set_pwm_output_signal_value_subscriber,
         orca_stm32_thruster_pwm_controller,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32MultiArray),
-        "thrusters/set_pwm_output_signal_value_us"
+        "thrusters/pwm_us"
     );
     if (rc != RCL_RET_OK) {
         char msg[128];

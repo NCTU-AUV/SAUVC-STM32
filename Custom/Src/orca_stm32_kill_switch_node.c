@@ -64,7 +64,7 @@ void initialize_orca_stm32_kill_switch_node(rclc_support_t *support, rclc_execut
         &orca_stm32_kill_switch_closed_publisher,
         orca_stm32_bridge,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
-        "orca_stm32_kill_switch_closed"
+        "sensors/kill_switch_closed"
     );
     if (rc != RCL_RET_OK) {
         char msg[128];

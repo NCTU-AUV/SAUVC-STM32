@@ -44,12 +44,12 @@ void initialize_orca_stm32_electromagnet_controller(rclc_support_t *support, rcl
         &electromagnet_set_on_subscriber,
         orca_stm32_bridge,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
-        "electromagnet/set_on"
+        "actuators/electromagnet/enabled"
     );
     if (rc != RCL_RET_OK) {
         char msg[128];
         int n = snprintf(msg, sizeof(msg),
-                         "failed to create electromagnet/set_on subscriber (rc=%d): %s\n",
+                         "failed to create actuators/electromagnet/enabled subscriber (rc=%d): %s\n",
                          (int)rc,
                          rcl_get_error_string().str);
         if (n > 0) {
@@ -70,7 +70,7 @@ void initialize_orca_stm32_electromagnet_controller(rclc_support_t *support, rcl
     if (rc != RCL_RET_OK) {
         char msg[128];
         int n = snprintf(msg, sizeof(msg),
-                         "failed to register electromagnet/set_on callback (rc=%d): %s\n",
+                         "failed to register actuators/electromagnet/enabled callback (rc=%d): %s\n",
                          (int)rc,
                          rcl_get_error_string().str);
         if (n > 0) {

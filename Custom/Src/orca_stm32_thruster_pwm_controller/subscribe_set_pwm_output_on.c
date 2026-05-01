@@ -38,7 +38,7 @@ bool initialize_set_pwm_output_on_subscriber(rcl_node_t *orca_stm32_thruster_pwm
         &set_pwm_output_on_subscriber,
         orca_stm32_thruster_pwm_controller,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
-        "thrusters/set_pwm_output_on"
+        "thrusters/enabled"
     );
     if (rc != RCL_RET_OK) {
         char msg[128];

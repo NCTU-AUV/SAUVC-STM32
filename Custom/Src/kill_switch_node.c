@@ -55,14 +55,14 @@ void kill_switch_on_timer_tick(void)
 }
 
 
-void initialize_kill_switch_node(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *bridge)
+void initialize_kill_switch_node(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *stm32_node)
 {
     (void)executor;
 
     // create publisher
     rcl_ret_t rc = rclc_publisher_init_default(
         &kill_switch_closed_publisher,
-        bridge,
+        stm32_node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
         "sensors/kill_switch_closed"
     );

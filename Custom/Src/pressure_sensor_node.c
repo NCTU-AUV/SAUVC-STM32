@@ -60,14 +60,14 @@ void pressure_sensor_on_timer_tick(void)
 }
 
 
-void initialize_pressure_sensor_node(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *bridge, osMessageQueueId_t pressureSensorDepthQueueHandle)
+void initialize_pressure_sensor_node(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *stm32_node, osMessageQueueId_t pressureSensorDepthQueueHandle)
 {
     (void)executor;
 
     // create publisher
     rcl_ret_t rc = rclc_publisher_init_default(
         &pressure_sensor_depth_publisher,
-        bridge,
+        stm32_node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32),
         "sensors/depth_m"
     );

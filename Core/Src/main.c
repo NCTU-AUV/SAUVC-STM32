@@ -588,7 +588,7 @@ void StartDefaultTask(void *argument)
       &debug_log_publisher,
       &orca_stm32_bridge,
       ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, String),
-      "orca_stm32_debug_log");
+      "/diagnostics/stm32/log");
   if (rc != RCL_RET_OK) {
     printf("debug_log publisher init failed: %d\n", (int)rc);
   } else {

@@ -1,4 +1,4 @@
-#include "orca_stm32_electromagnet_controller.h"
+#include "electromagnet_controller.h"
 
 #include "debug_logger.h"
 #include "main.h"

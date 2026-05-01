@@ -1,7 +1,7 @@
-#include "orca_stm32_thruster_pwm_controller/subscribe_set_pwm_output_on.h"
+#include "thruster_pwm_controller/subscribe_set_pwm_output_on.h"
 
 
-#include "orca_stm32_thruster_pwm_driver.h"
+#include "thruster_pwm_driver.h"
 #include "debug_logger.h"
 
 

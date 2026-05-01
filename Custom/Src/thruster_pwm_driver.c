@@ -1,7 +1,7 @@
-#include "orca_stm32_thruster_pwm_driver.h"
+#include "thruster_pwm_driver.h"
 
 
-#include "orca_stm32_kill_switch_driver.h"
+#include "kill_switch_driver.h"
 #include "debug_logger.h"
 
 #include <stdio.h>

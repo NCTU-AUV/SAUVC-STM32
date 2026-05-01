@@ -23,13 +23,13 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "micro_ros_configuration.h"
-#include "orca_stm32_thruster_pwm_driver.h"
-#include "orca_stm32_thruster_pwm_controller/orca_stm32_thruster_pwm_controller.h"
-#include "orca_stm32_kill_switch_driver.h"
-#include "orca_stm32_kill_switch_node.h"
+#include "thruster_pwm_driver.h"
+#include "thruster_pwm_controller/thruster_pwm_controller.h"
+#include "kill_switch_driver.h"
+#include "kill_switch_node.h"
 #include "MS5837.h"
-#include "orca_stm32_pressure_sensor_node.h"
-#include "orca_stm32_electromagnet_controller.h"
+#include "pressure_sensor_node.h"
+#include "electromagnet_controller.h"
 #include "debug_logger.h"
 
 #include <rclc/rclc.h>

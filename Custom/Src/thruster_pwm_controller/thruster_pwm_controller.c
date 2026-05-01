@@ -1,7 +1,7 @@
-#include "orca_stm32_thruster_pwm_controller/orca_stm32_thruster_pwm_controller.h"
+#include "thruster_pwm_controller/thruster_pwm_controller.h"
 
-#include "orca_stm32_thruster_pwm_controller/subscribe_set_pwm_output_on.h"
-#include "orca_stm32_thruster_pwm_controller/subscribe_set_pwm_output_signal_value.h"
+#include "thruster_pwm_controller/subscribe_set_pwm_output_on.h"
+#include "thruster_pwm_controller/subscribe_set_pwm_output_signal_value.h"
 #include "debug_logger.h"
 
 const unsigned int THRUSTER_PWM_CONTROLLER_NUM_HANDLES = 1 + 1;

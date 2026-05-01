@@ -1,5 +1,5 @@
-#ifndef ORCA_STM32_ELECTROMAGNET_CONTROLLER_H
-#define ORCA_STM32_ELECTROMAGNET_CONTROLLER_H
+#ifndef ELECTROMAGNET_CONTROLLER_H
+#define ELECTROMAGNET_CONTROLLER_H
 
 #include <rclc/rclc.h>
 #include <rclc/executor.h>

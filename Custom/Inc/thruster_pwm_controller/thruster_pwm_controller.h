@@ -6,7 +6,7 @@
 
 extern const unsigned int THRUSTER_PWM_CONTROLLER_NUM_HANDLES;
 
-void initialize_orca_stm32_thruster_pwm_controller(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *orca_stm32_bridge);
+void initialize_thruster_pwm_controller(rclc_support_t *support, rclc_executor_t *executor, rcl_node_t *stm32_node);
 void thruster_pwm_controller_on_timer_tick(void);
 
 #endif

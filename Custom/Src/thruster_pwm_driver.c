@@ -94,7 +94,7 @@ void set_thruster_pwm_output(ThrusterNumber thruster_number, uint32_t output_sig
 
 void start_thruster_pwm_output(ThrusterNumber thruster_number)
 {
-    if(orca_stm32_kill_switch_closed())
+    if(kill_switch_closed())
     {
         return;
     }

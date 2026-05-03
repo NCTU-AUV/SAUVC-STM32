@@ -12,17 +12,17 @@
 const unsigned int KILL_SWITCH_NUM_HANDLES = 0;
 
 
-static rcl_publisher_t kill_switch_closed_publisher;
+static rcl_publisher_t killed_publisher;
 
-static bool previous_kill_switch_state;
+static bool previous_killed_state;
 
 
-static void publish_kill_switch_state(bool current_kill_switch_state)
+static void publish_killed_state(bool killed)
 {
-    std_msgs__msg__Bool kill_switch_closed_msg;
-    kill_switch_closed_msg.data = current_kill_switch_state;
+    std_msgs__msg__Bool killed_msg;
+    killed_msg.data = killed;
 
-    rcl_ret_t ret = rcl_publish(&kill_switch_closed_publisher, &kill_switch_closed_msg, NULL);
+    rcl_ret_t ret = rcl_publish(&killed_publisher, &killed_msg, NULL);
     if (ret != RCL_RET_OK)
     {
         char msg[128];
@@ -40,12 +40,12 @@ static void publish_kill_switch_state(bool current_kill_switch_state)
 
 static void kill_switch_timer_callback(rcl_timer_t *, int64_t)
 {
-    bool current_kill_switch_state = kill_switch_closed();
+    bool killed = kill_switch_closed();
 
-    if(current_kill_switch_state != previous_kill_switch_state)
+    if(killed != previous_killed_state)
     {
-        publish_kill_switch_state(current_kill_switch_state);
-        previous_kill_switch_state = current_kill_switch_state;
+        publish_killed_state(killed);
+        previous_killed_state = killed;
     }
 }
 
@@ -61,10 +61,10 @@ void initialize_kill_switch_node(rclc_support_t *support, rclc_executor_t *execu
 
     // create publisher
     rcl_ret_t rc = rclc_publisher_init_default(
-        &kill_switch_closed_publisher,
+        &killed_publisher,
         stm32_node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
-        "sensors/kill_switch_closed"
+        "sensors/killed"
     );
     if (rc != RCL_RET_OK) {
         char msg[128];
@@ -79,6 +79,6 @@ void initialize_kill_switch_node(rclc_support_t *support, rclc_executor_t *execu
         return;
     }
 
-    previous_kill_switch_state = kill_switch_closed();
-    publish_kill_switch_state(previous_kill_switch_state);
+    previous_killed_state = kill_switch_closed();
+    publish_killed_state(previous_killed_state);
 }

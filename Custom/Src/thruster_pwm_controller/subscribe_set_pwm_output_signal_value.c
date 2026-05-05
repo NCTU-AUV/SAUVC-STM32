@@ -16,6 +16,35 @@ static std_msgs__msg__Int32MultiArray set_pwm_output_signal_value_msg;
 static int32_t set_pwm_output_signal_value_buffer[8];
 
 
+static void set_all_thrusters_neutral(void)
+{
+    for (size_t i = 0; i < 8; i++)
+    {
+        set_thruster_pwm_output((ThrusterNumber)i, THRUSTER_PWM_NEUTRAL_SIGNAL_US);
+    }
+}
+
+
+static bool pwm_message_is_valid(const std_msgs__msg__Int32MultiArray *msg)
+{
+    if (msg->data.size != 8 || msg->data.data == NULL) {
+        (void)debug_logger_publish("invalid thrusters/pwm_us message length; forcing neutral PWM output\n");
+        return false;
+    }
+
+    for (size_t i = 0; i < 8; i++)
+    {
+        int32_t output_signal_value_us = msg->data.data[i];
+        if (output_signal_value_us < 0) {
+            (void)debug_logger_publish("invalid negative thrusters/pwm_us value; forcing neutral PWM output\n");
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 static void the_set_pwm_output_signal_value_subscriber_callback(const void * msgin)
 {
     const std_msgs__msg__Int32MultiArray * set_pwm_output_signal_value_msg = (const std_msgs__msg__Int32MultiArray *)msgin;
@@ -23,19 +52,15 @@ static void the_set_pwm_output_signal_value_subscriber_callback(const void * msg
         (void)debug_logger_publish("set_pwm_output_signal_value callback received null message payload\n");
         return;
     }
-    
-    size_t values_received = set_pwm_output_signal_value_msg->data.size;
+
+    if (!pwm_message_is_valid(set_pwm_output_signal_value_msg)) {
+        set_all_thrusters_neutral();
+        return;
+    }
+
     for (size_t i = 0; i < 8; i++)
     {
-        int32_t output_signal_value_us = 0;
-        if (i < values_received) {
-            output_signal_value_us = set_pwm_output_signal_value_msg->data.data[i];
-            if(output_signal_value_us < 0)
-            {
-                output_signal_value_us = -output_signal_value_us;
-            }
-        }
-
+        int32_t output_signal_value_us = set_pwm_output_signal_value_msg->data.data[i];
         set_thruster_pwm_output((ThrusterNumber)i, (uint32_t)(output_signal_value_us));
     }
 }

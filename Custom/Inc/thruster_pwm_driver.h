@@ -17,6 +17,10 @@ typedef enum {
     THRUSTER7 = 7,
 } ThrusterNumber;
 
+#define THRUSTER_PWM_MIN_SIGNAL_US 1100U
+#define THRUSTER_PWM_NEUTRAL_SIGNAL_US 1500U
+#define THRUSTER_PWM_MAX_SIGNAL_US 1900U
+
 void initialize_all_thrusters(
     TIM_HandleTypeDef *thruster_0_htim,
     uint32_t thruster_0_channel,

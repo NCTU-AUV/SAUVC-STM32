@@ -27,7 +27,14 @@ static uint32_t clamp_pwm_output_signal_us(ThrusterNumber thruster_number, uint3
         return 0;
     }
 
-    uint32_t max_signal = htim->Init.Period;
+    if (requested_signal_us < THRUSTER_PWM_MIN_SIGNAL_US) {
+        return THRUSTER_PWM_MIN_SIGNAL_US;
+    }
+
+    uint32_t max_signal = THRUSTER_PWM_MAX_SIGNAL_US;
+    if (htim->Init.Period < max_signal) {
+        max_signal = htim->Init.Period;
+    }
     if (requested_signal_us > max_signal) {
         return max_signal;
     }
@@ -40,7 +47,7 @@ void initialize_thruster(ThrusterNumber thruster_number, TIM_HandleTypeDef *thru
     thruster_profiles[thruster_number].thruster_channel = thruster_channel;
     
     stop_thruster_pwm_output(thruster_number);
-    set_thruster_pwm_output(thruster_number, 0);
+    set_thruster_pwm_output(thruster_number, THRUSTER_PWM_NEUTRAL_SIGNAL_US);
 }
 
 void initialize_all_thrusters(
